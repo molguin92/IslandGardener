@@ -12,12 +12,15 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 
 import org.molguin.acbreedinghelper.R;
+import org.molguin.flowers.Flower;
+import org.molguin.flowers.FlowerConstants;
 import org.molguin.flowers.FlowerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -25,15 +28,18 @@ public class MainViewModel extends ViewModel {
     private FlowerFactory flowerFactory = null;
     private Lock factoryLock;
     private final MutableLiveData<Boolean> dataAvailable = new MutableLiveData<Boolean>(false);
+    private final FlowerAdapter flowerAdapter;
 
     public MainViewModel() {
         super();
         this.factoryLock = new ReentrantLock();
+        this.flowerAdapter = new FlowerAdapter();
     }
 
     public LiveData<Boolean> dataAvailable() {
         return this.dataAvailable;
     }
+    public FlowerAdapter getFlowerAdapter() { return this.flowerAdapter; }
 
     public void loadDataAsync(final Context appContext) throws IOException {
         try {
@@ -60,6 +66,29 @@ public class MainViewModel extends ViewModel {
                     }
                 } catch (IOException e) {
                     Log.e("loadDataAsync", e.toString());
+                }
+            }
+        }).start();
+    }
+
+    public void loadFlowerListAsync() {
+        try {
+            this.factoryLock.lock();
+            if (this.flowerFactory == null) return;
+        } finally {
+            this.factoryLock.unlock();
+        }
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    factoryLock.lock();
+                    List<Flower> flowers = flowerFactory.getAllFlowersForSpecies(FlowerConstants.Species.LILY);
+                    flowerAdapter.addFlowers(flowers);
+                    Log.w("Adapter", "Added " + flowers.size() + " flowers.");
+                } finally {
+                    factoryLock.unlock();
                 }
             }
         }).start();
