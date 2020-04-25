@@ -15,20 +15,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class FlowerBreedingApplication extends Application {
-    private FlowerFactory flowerFactory = null;
-
-    public FlowerFactory getFlowerFactory() throws IOException {
-        if (this.flowerFactory == null) {
-            // instantiate
-            AssetManager am = this.getAssets();
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(am.open("data/flower_data.json")));
-            JsonObject json = Json.parse(reader).asObject();
-            this.flowerFactory = new FlowerFactory(json);
-        }
-        return this.flowerFactory;
-    }
-
     // Called when the application is starting, before any other application objects have been created.
     // Overriding this method is totally optional!
     @Override

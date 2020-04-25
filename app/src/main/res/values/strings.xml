@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">AC Breeding Helper</string>
+    <string name="flower_json">data/flower_data.json</string>
+    <string name="loading_text">Loading flower data…</string>
 </resources>

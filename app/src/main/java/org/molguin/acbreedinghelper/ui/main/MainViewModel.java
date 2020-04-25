@@ -1,30 +1,72 @@
 package org.molguin.acbreedinghelper.ui.main;
 
-import android.app.Application;
 import android.content.Context;
+import android.content.res.AssetManager;
+import android.util.Log;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import org.molguin.acbreedinghelper.FlowerBreedingApplication;
-import org.molguin.flowers.Flower;
-import org.molguin.flowers.FlowerConstants;
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonObject;
+
+import org.molguin.acbreedinghelper.R;
 import org.molguin.flowers.FlowerFactory;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.List;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class MainViewModel extends ViewModel {
-    public String[] getFlowers(FlowerConstants.Species species, Context appContext) throws IOException {
-        FlowerFactory flowerFactory =
-                ((FlowerBreedingApplication) appContext.getApplicationContext()).getFlowerFactory();
+    private FlowerFactory flowerFactory = null;
+    private Lock factoryLock;
+    private final MutableLiveData<Boolean> dataAvailable = new MutableLiveData<Boolean>(false);
 
-        List<Flower> flowers = flowerFactory.getAllFlowersForSpecies(species);
-        String[] results = new String[flowers.size()];
+    public MainViewModel() {
+        super();
+        this.factoryLock = new ReentrantLock();
+    }
 
-        int idx = 0;
-        for (Flower f : flowers)
-            results[idx++] = f.toString();
+    public LiveData<Boolean> dataAvailable() {
+        return this.dataAvailable;
+    }
 
-        return results;
+    public void loadDataAsync(final Context appContext) throws IOException {
+        try {
+            this.factoryLock.lock();
+            if (this.flowerFactory != null) return;
+        } finally {
+            this.factoryLock.unlock();
+        }
+
+        final AssetManager am = appContext.getAssets();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Reader reader = new InputStreamReader(am.open(appContext.getString(R.string.flower_json)));
+                    FlowerFactory fact = new FlowerFactory(Json.parse(reader).asObject());
+                    try {
+                        factoryLock.lock();
+                        flowerFactory = fact;
+                        Log.i("loadDataAsync", "Data loaded in background.");
+                        dataAvailable.postValue(true);
+                    } finally {
+                        factoryLock.unlock();
+                    }
+                } catch (IOException e) {
+                    Log.e("loadDataAsync", e.toString());
+                }
+            }
+        }).start();
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
     }
 }
