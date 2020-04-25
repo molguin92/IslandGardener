@@ -2,4 +2,7 @@
     <string name="app_name">AC Breeding Helper</string>
     <string name="flower_json">data/flower_data.json</string>
     <string name="loading_text">Loading flower data…</string>
+    <string name="select_parent1">Parent 1</string>
+    <string name="select_parent2">Parent 2</string>
+    <string name="select_species">Species</string>
 </resources>

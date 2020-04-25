@@ -30,10 +30,23 @@ public class MainViewModel extends ViewModel {
     private final MutableLiveData<Boolean> dataAvailable = new MutableLiveData<Boolean>(false);
     private final FlowerAdapter flowerAdapter;
 
+    private final String[] flower_species;
+
     public MainViewModel() {
         super();
         this.factoryLock = new ReentrantLock();
         this.flowerAdapter = new FlowerAdapter();
+
+        FlowerConstants.Species[] species = FlowerConstants.Species.values();
+        this.flower_species = new String[species.length];
+        for (int i = 0; i< species.length; i++) {
+            String name = species[i].name().toLowerCase();
+            this.flower_species[i] = name.substring(0, 1).toUpperCase() + name.substring(1);
+        }
+    }
+
+    public String[] getFlowerSpecies(){
+        return this.flower_species;
     }
 
     public LiveData<Boolean> dataAvailable() {
