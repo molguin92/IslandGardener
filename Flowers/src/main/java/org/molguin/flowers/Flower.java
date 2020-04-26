@@ -1,6 +1,6 @@
 package org.molguin.flowers;
 
-public class Flower {
+public class Flower implements Comparable<Flower> {
     public final FlowerConstants.Species species;
     public final FlowerConstants.Color color;
     public final FlowerConstants.Origin origin;
@@ -22,5 +22,10 @@ public class Flower {
         return String.format("{%s | %s | %s | %s}",
                 this.species.name(), this.color.name(),
                 this.origin.name(), this.getEncodedGenotype());
+    }
+
+    @Override
+    public int compareTo(Flower other) {
+        return this.getEncodedGenotype().compareTo(other.getEncodedGenotype());
     }
 }

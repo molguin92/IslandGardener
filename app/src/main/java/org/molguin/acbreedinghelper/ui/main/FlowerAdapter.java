@@ -14,6 +14,7 @@ import org.molguin.acbreedinghelper.R;
 import org.molguin.flowers.Flower;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class FlowerAdapter extends RecyclerView.Adapter<FlowerAdapter.ViewHolder> {
@@ -32,25 +33,13 @@ public class FlowerAdapter extends RecyclerView.Adapter<FlowerAdapter.ViewHolder
 
     public FlowerAdapter() {
         this.flowers = new ArrayList<Flower>();
+
     }
 
-    public void setFlowers(List<Flower> flowers) {
+    public void updateFlowers(Collection<Flower> flowers) {
         this.flowers.clear();
         this.flowers.addAll(flowers);
         this.notifyDataSetChanged();
-    }
-
-    public void addFlowers(List<Flower> flowers) {
-        int num_items = this.flowers.size();
-        int new_item_cnt = flowers.size();
-        this.flowers.addAll(flowers);
-        this.notifyItemRangeInserted(num_items, new_item_cnt);
-    }
-
-    public void addFlower(Flower flower) {
-        int num_items = this.flowers.size();
-        this.flowers.add(flower);
-        this.notifyItemInserted(num_items);
     }
 
     @NonNull
@@ -70,7 +59,7 @@ public class FlowerAdapter extends RecyclerView.Adapter<FlowerAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         // Get the data model based on position
-        Flower flower = this.flowers.get(position);
+        Flower flower = (Flower) this.flowers.get(position);
 
         // Set item views based on your views and data model
         String color = flower.color.name().toLowerCase();

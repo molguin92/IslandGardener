@@ -18,6 +18,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
 
 public class FlowerFactory {
@@ -107,9 +109,9 @@ public class FlowerFactory {
         }
     }
 
-    public List<Flower> getAllFlowersForSpecies(FlowerConstants.Species species) {
+    public Set<Flower> getAllFlowersForSpecies(FlowerConstants.Species species) {
         Graph species_g = this.speciesGraphMap.get(species);
-        List<Flower> flowers = new LinkedList<>();
+        Set<Flower> flowers = new TreeSet<>();
 
         for (Node node : species_g.getNodeSet())
             if (node.hasAttribute("flower"))

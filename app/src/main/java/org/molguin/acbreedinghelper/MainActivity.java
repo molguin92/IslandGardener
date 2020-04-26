@@ -5,13 +5,10 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import org.molguin.acbreedinghelper.ui.main.LoadingFragment;
 import org.molguin.acbreedinghelper.ui.main.MainFragment;
 import org.molguin.acbreedinghelper.ui.main.MainViewModel;
-
-import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,33 +20,24 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.main_activity);
         if (savedInstanceState == null) {
             this.model = new ViewModelProvider(this).get(MainViewModel.class);
-            try {
-                this.model.loadDataAsync(this.getApplicationContext());
-            } catch (IOException e) {
-                Log.e(this.toString(), e.toString());
-            }
+            this.model.loadDataAsync(this.getApplicationContext());
 
-            boolean data_avail = this.model.dataAvailable().getValue();
-            Log.e(this.toString(), String.valueOf(data_avail));
+            boolean data_avail = this.model.dataLoadedLiveData().getValue();
             if (!data_avail) {
-                this.model.dataAvailable().observe(this, new Observer<Boolean>() {
+                this.model.dataLoadedLiveData().observe(this, new Observer<Boolean>() {
                     @Override
-                    public void onChanged(Boolean aBoolean) {
-                        if (aBoolean) {
-                            Log.w(MainActivity.this.toString(), "Loaded");
+                    public void onChanged(Boolean data_loaded) {
+                        if (data_loaded) {
                             getSupportFragmentManager().beginTransaction()
                                     .replace(R.id.container, MainFragment.newInstance())
                                     .commitNow();
                         }
                     }
                 });
-
-                Log.e(this.toString(), "Good, I guess?");
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.container, LoadingFragment.newInstance())
                         .commitNow();
             } else {
-                Log.e(this.toString(), "Lolwhat");
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.container, MainFragment.newInstance())
                         .commitNow();

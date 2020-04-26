@@ -9,52 +9,62 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonObject;
 
 import org.molguin.acbreedinghelper.R;
 import org.molguin.flowers.Flower;
 import org.molguin.flowers.FlowerConstants;
 import org.molguin.flowers.FlowerFactory;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class MainViewModel extends ViewModel {
+    private final MutableLiveData<Boolean> dataLoaded = new MutableLiveData<Boolean>(false);
+    private final MutableLiveData<Collection<Flower>> flowerList =
+            new MutableLiveData<Collection<Flower>>(new ArrayList<Flower>());
+
     private FlowerFactory flowerFactory = null;
     private Lock factoryLock;
-    private final MutableLiveData<Boolean> dataAvailable = new MutableLiveData<Boolean>(false);
-    private final FlowerAdapter flowerAdapter;
 
     private final String[] flower_species;
 
+    private final ExecutorService exec;
+
     public MainViewModel() {
         super();
+        this.exec = Executors.newCachedThreadPool();
         this.factoryLock = new ReentrantLock();
-        this.flowerAdapter = new FlowerAdapter();
 
         FlowerConstants.Species[] species = FlowerConstants.Species.values();
         this.flower_species = new String[species.length];
-        for (int i = 0; i< species.length; i++) {
+        for (int i = 0; i < species.length; i++) {
             String name = species[i].name().toLowerCase();
             this.flower_species[i] = name.substring(0, 1).toUpperCase() + name.substring(1);
         }
     }
 
-    public String[] getFlowerSpecies(){
+    public String[] getFlowerSpecies() {
         return this.flower_species;
     }
 
-    public LiveData<Boolean> dataAvailable() {
-        return this.dataAvailable;
+    public LiveData<Boolean> dataLoadedLiveData() {
+        return this.dataLoaded;
     }
-    public FlowerAdapter getFlowerAdapter() { return this.flowerAdapter; }
 
-    public void loadDataAsync(final Context appContext) throws IOException {
+    public LiveData<Collection<Flower>> flowerListLiveData() {
+        return this.flowerList;
+    }
+
+    public void loadDataAsync(final Context appContext) {
         try {
             this.factoryLock.lock();
             if (this.flowerFactory != null) return;
@@ -63,7 +73,7 @@ public class MainViewModel extends ViewModel {
         }
 
         final AssetManager am = appContext.getAssets();
-        new Thread(new Runnable() {
+        this.exec.submit(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -73,7 +83,7 @@ public class MainViewModel extends ViewModel {
                         factoryLock.lock();
                         flowerFactory = fact;
                         Log.i("loadDataAsync", "Data loaded in background.");
-                        dataAvailable.postValue(true);
+                        dataLoaded.postValue(true);
                     } finally {
                         factoryLock.unlock();
                     }
@@ -81,10 +91,10 @@ public class MainViewModel extends ViewModel {
                     Log.e("loadDataAsync", e.toString());
                 }
             }
-        }).start();
+        });
     }
 
-    public void loadFlowerListAsync() {
+    public void loadFlowersForSpeciesAsync(final FlowerConstants.Species species) {
         try {
             this.factoryLock.lock();
             if (this.flowerFactory == null) return;
@@ -92,19 +102,19 @@ public class MainViewModel extends ViewModel {
             this.factoryLock.unlock();
         }
 
-        new Thread(new Runnable() {
+        Future loadFuture = this.exec.submit(new Runnable() {
             @Override
             public void run() {
                 try {
                     factoryLock.lock();
-                    List<Flower> flowers = flowerFactory.getAllFlowersForSpecies(FlowerConstants.Species.LILY);
-                    flowerAdapter.addFlowers(flowers);
+                    Collection<Flower> flowers = flowerFactory.getAllFlowersForSpecies(species);
+                    flowerList.postValue(flowers);
                     Log.w("Adapter", "Added " + flowers.size() + " flowers.");
                 } finally {
                     factoryLock.unlock();
                 }
             }
-        }).start();
+        });
     }
 
     @Override

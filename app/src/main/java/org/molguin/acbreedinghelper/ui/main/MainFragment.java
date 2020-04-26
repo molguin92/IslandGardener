@@ -19,10 +19,20 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.molguin.acbreedinghelper.R;
+import org.molguin.flowers.Flower;
+import org.molguin.flowers.FlowerConstants;
+
+import java.util.Collection;
+import java.util.List;
 
 public class MainFragment extends Fragment {
 
     private MainViewModel mViewModel;
+    private final FlowerAdapter flowerAdapter;
+
+    public MainFragment() {
+        this.flowerAdapter = new FlowerAdapter();
+    }
 
     public static MainFragment newInstance() {
         return new MainFragment();
@@ -41,23 +51,39 @@ public class MainFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         mViewModel = new ViewModelProvider(this.getActivity()).get(MainViewModel.class);
 
-        Spinner species_select = this.getView().findViewById(R.id.spinner_species);
+        RecyclerView rview = this.getView().findViewById(R.id.resultview);
+        rview.setAdapter(this.flowerAdapter);
+        rview.setLayoutManager(new LinearLayoutManager(this.getContext()));
+
+        // listen to the flower live data
+        mViewModel.flowerListLiveData().observe(this.getViewLifecycleOwner(),
+                new Observer<Collection<Flower>>() {
+                    @Override
+                    public void onChanged(Collection<Flower> flowers) {
+                        flowerAdapter.updateFlowers(flowers);
+                    }
+                });
+
+        final Spinner species_select = this.getView().findViewById(R.id.spinner_species);
         ArrayAdapter<String> species_adapter = new ArrayAdapter<String>(this.getContext(),
                 android.R.layout.simple_spinner_dropdown_item,
                 mViewModel.getFlowerSpecies()
         );
         species_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         species_select.setAdapter(species_adapter);
-        species_select.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        species_select.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String species_str = species_select.getSelectedItem().toString().toUpperCase();
+                FlowerConstants.Species species = FlowerConstants.Species.valueOf(species_str);
+                mViewModel.loadFlowersForSpeciesAsync(species);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
 
             }
         });
-
-        RecyclerView rview = this.getView().findViewById(R.id.resultview);
-        rview.setAdapter(mViewModel.getFlowerAdapter());
-        rview.setLayoutManager(new LinearLayoutManager(this.getContext()));
-        mViewModel.loadFlowerListAsync();
+//        mViewModel.loadFlowerListAsync();
     }
 }
