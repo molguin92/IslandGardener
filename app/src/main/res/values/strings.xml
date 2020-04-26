@@ -5,4 +5,8 @@
     <string name="select_parent1">Parent 1</string>
     <string name="select_parent2">Parent 2</string>
     <string name="select_species">Species</string>
+    <string name="color_heading">Color</string>
+    <string name="genotype_heading">Genotype</string>
+    <string name="origin_heading">Origin</string>
+    <string name="placeholder">PLACEHOLDER</string>
 </resources>

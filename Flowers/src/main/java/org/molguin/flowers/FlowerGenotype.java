@@ -63,11 +63,34 @@ public class FlowerGenotype {
         }
     }
 
-    final Gene red;
-    final Gene ylw;
-    final Gene wht;
-    final Gene shd;
+    private final Gene red;
+    private final Gene ylw;
+    private final Gene wht;
+    private final Gene shd;
     final String encoded;
+    final String human_readable;
+
+    private static String genHumanReadableRep(Gene[] genes, char[] symbols) {
+        if (genes.length != symbols.length) throw new AssertionError();
+        StringBuilder rep = new StringBuilder();
+        for (int i = 0; i < genes.length; i++) {
+            String symbol = String.valueOf(symbols[i]);
+            switch (genes[i].value) {
+                case 0:
+                    symbol = symbol.toLowerCase();
+                    rep.append(symbol).append(symbol);
+                    break;
+                case 1:
+                    rep.append(symbol.toUpperCase()).append(symbol.toLowerCase());
+                    break;
+                case 2:
+                    symbol = symbol.toUpperCase();
+                    rep.append(symbol).append(symbol);
+                    break;
+            }
+        }
+        return rep.toString();
+    }
 
     FlowerGenotype(Gene red, Gene ylw, Gene wht, Gene shd) {
         this.red = red;
@@ -75,9 +98,12 @@ public class FlowerGenotype {
         this.wht = wht;
         this.shd = shd;
 
-        this.encoded = String.format(Locale.getDefault(),"%04d",
+        this.encoded = String.format(Locale.getDefault(), "%04d",
                 (red.value * 1000) + (ylw.value * 100) +
-                (wht.value * 10) + shd.value);
+                        (wht.value * 10) + shd.value);
+        this.human_readable = FlowerGenotype.genHumanReadableRep(
+                new Gene[]{this.red, this.ylw, this.wht, this.shd}, new char[]{'r', 'y', 'w', 's'});
+
     }
 
     FlowerGenotype(String encoded) {
@@ -88,6 +114,8 @@ public class FlowerGenotype {
         this.ylw = new Gene(Integer.parseInt(String.valueOf(values[1])));
         this.wht = new Gene(Integer.parseInt(String.valueOf(values[2])));
         this.shd = new Gene(Integer.parseInt(String.valueOf(values[3])));
+        this.human_readable = FlowerGenotype.genHumanReadableRep(
+                new Gene[]{this.red, this.ylw, this.wht, this.shd}, new char[]{'r', 'y', 'w', 's'});
 
     }
 

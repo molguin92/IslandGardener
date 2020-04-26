@@ -13,8 +13,8 @@ public class Flower implements Comparable<Flower> {
         this.genotype = genotype;
     }
 
-    public String getEncodedGenotype() {
-        return this.genotype.encoded;
+    public String getHumanReadableGenotype() {
+        return this.genotype.human_readable;
     }
 
     @Override
@@ -22,6 +22,10 @@ public class Flower implements Comparable<Flower> {
         return String.format("{%s | %s | %s | %s}",
                 this.species.name(), this.color.name(),
                 this.origin.name(), this.getEncodedGenotype());
+    }
+
+    public String getEncodedGenotype() {
+        return this.genotype.encoded;
     }
 
     @Override

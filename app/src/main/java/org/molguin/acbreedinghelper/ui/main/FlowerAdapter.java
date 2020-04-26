@@ -18,17 +18,6 @@ import java.util.Collection;
 import java.util.List;
 
 public class FlowerAdapter extends RecyclerView.Adapter<FlowerAdapter.ViewHolder> {
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public final TextView textView;
-        public final ImageView iconView;
-
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            this.textView = itemView.findViewById(R.id.flower_text);
-            this.iconView = itemView.findViewById(R.id.flowerIcon);
-        }
-    }
-
     final private List<Flower> flowers;
 
     public FlowerAdapter() {
@@ -49,7 +38,7 @@ public class FlowerAdapter extends RecyclerView.Adapter<FlowerAdapter.ViewHolder
         LayoutInflater inflater = LayoutInflater.from(context);
 
         // Inflate the custom layout
-        View contactView = inflater.inflate(R.layout.flowerinfo, parent, false);
+        View contactView = inflater.inflate(R.layout.flowercard, parent, false);
 
         // Return a new holder instance
         ViewHolder viewHolder = new ViewHolder(contactView);
@@ -59,28 +48,43 @@ public class FlowerAdapter extends RecyclerView.Adapter<FlowerAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         // Get the data model based on position
-        Flower flower = (Flower) this.flowers.get(position);
-
-        // Set item views based on your views and data model
-        String color = flower.color.name().toLowerCase();
-        String species = flower.species.name().toLowerCase();
-        String icon_name = String.format("%s_%s", species, color);
-
-
-        TextView textView = holder.textView;
-        ImageView iconView = holder.iconView;
-
-        int icon_id = iconView.getContext()
-                .getResources()
-                .getIdentifier(icon_name, "drawable", iconView.getContext().getPackageName());
-
-        textView.setText(flower.getEncodedGenotype());
-        iconView.setImageResource(icon_id);
-        iconView.setMaxHeight(24);
+        holder.setFlower(this.flowers.get(position));
     }
 
     @Override
     public int getItemCount() {
         return this.flowers.size();
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        public final ImageView icon;
+
+        public final TextView color;
+        public final TextView genotype;
+        public final TextView origin;
+
+        ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            this.icon = itemView.findViewById(R.id.flowerIcon);
+            this.color = itemView.findViewById(R.id.flower_color);
+            this.genotype = itemView.findViewById(R.id.flower_genotype);
+            this.origin = itemView.findViewById(R.id.flower_origin);
+        }
+
+        void setFlower(Flower flower) {
+            String color = flower.color.name().toLowerCase();
+            String species = flower.species.name().toLowerCase();
+            String icon_name = String.format("%s_%s", species, color);
+            String origin = flower.origin.name().toLowerCase();
+
+            int icon_id = icon.getContext()
+                    .getResources()
+                    .getIdentifier(icon_name, "drawable", icon.getContext().getPackageName());
+
+            this.icon.setImageResource(icon_id);
+            this.color.setText(color);
+            this.genotype.setText(flower.getHumanReadableGenotype());
+            this.origin.setText(origin);
+        }
     }
 }
