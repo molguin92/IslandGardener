@@ -1,18 +1,7 @@
 package org.molguin.acbreedinghelper;
 
 import android.app.Application;
-import android.content.Context;
-import android.content.res.AssetManager;
 import android.content.res.Configuration;
-
-import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonObject;
-
-import org.molguin.flowers.FlowerFactory;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 
 public class FlowerBreedingApplication extends Application {
     // Called when the application is starting, before any other application objects have been created.

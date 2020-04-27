@@ -13,17 +13,16 @@ import com.eclipsesource.json.Json;
 import org.molguin.acbreedinghelper.R;
 import org.molguin.flowers.Flower;
 import org.molguin.flowers.FlowerConstants;
-import org.molguin.flowers.FlowerFactory;
+import org.molguin.flowers.FlowerDatabase;
 
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -31,13 +30,10 @@ public class MainViewModel extends ViewModel {
     private final MutableLiveData<Boolean> dataLoaded = new MutableLiveData<Boolean>(false);
     private final MutableLiveData<Collection<Flower>> flowerList =
             new MutableLiveData<Collection<Flower>>(new ArrayList<Flower>());
-
-    private FlowerFactory flowerFactory = null;
-    private Lock factoryLock;
-
     private final String[] flower_species;
-
     private final ExecutorService exec;
+    private FlowerDatabase flowerFactory = null;
+    private Lock factoryLock;
 
     public MainViewModel() {
         super();
@@ -78,7 +74,7 @@ public class MainViewModel extends ViewModel {
             public void run() {
                 try {
                     Reader reader = new InputStreamReader(am.open(appContext.getString(R.string.flower_json)));
-                    FlowerFactory fact = new FlowerFactory(Json.parse(reader).asObject());
+                    FlowerDatabase fact = new FlowerDatabase(Json.parse(reader).asObject());
                     try {
                         factoryLock.lock();
                         flowerFactory = fact;
@@ -87,7 +83,7 @@ public class MainViewModel extends ViewModel {
                     } finally {
                         factoryLock.unlock();
                     }
-                } catch (IOException e) {
+                } catch (Exception e) {
                     Log.e("loadDataAsync", e.toString());
                 }
             }
@@ -102,12 +98,14 @@ public class MainViewModel extends ViewModel {
             this.factoryLock.unlock();
         }
 
-        Future loadFuture = this.exec.submit(new Runnable() {
+        this.exec.submit(new Runnable() {
             @Override
             public void run() {
                 try {
                     factoryLock.lock();
-                    Collection<Flower> flowers = flowerFactory.getAllFlowersForSpecies(species);
+                    List<Flower> flowers =
+                            new ArrayList<Flower>(flowerFactory.getAllFlowersForSpecies(species));
+                    Collections.sort(flowers);
                     flowerList.postValue(flowers);
                     Log.w("Adapter", "Added " + flowers.size() + " flowers.");
                 } finally {

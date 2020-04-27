@@ -6,9 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,12 +21,11 @@ import org.molguin.flowers.Flower;
 import org.molguin.flowers.FlowerConstants;
 
 import java.util.Collection;
-import java.util.List;
 
 public class MainFragment extends Fragment {
 
-    private MainViewModel mViewModel;
     private final FlowerAdapter flowerAdapter;
+    private MainViewModel mViewModel;
 
     public MainFragment() {
         this.flowerAdapter = new FlowerAdapter();
