@@ -11,6 +11,9 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
+
 import org.molguin.acbreedinghelper.R;
 import org.molguin.flowers.FlowerConstants;
 
@@ -34,6 +37,15 @@ public class TabFragment extends Fragment {
         flowerFragmentAdapter = new FlowerFragmentAdapter(this);
         viewPager = view.findViewById(R.id.flower_pager);
         viewPager.setAdapter(flowerFragmentAdapter);
+
+        TabLayout tabLayout = view.findViewById(R.id.tab_layout);
+        new TabLayoutMediator(tabLayout, viewPager, new TabLayoutMediator.TabConfigurationStrategy() {
+            @Override
+            public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
+                int species_pos = position % FlowerConstants.Species.values().length;
+                tab.setText(FlowerConstants.Species.values()[species_pos].name().toUpperCase());
+            }
+        }).attach();
     }
 
     public static class FlowerFragmentAdapter extends FragmentStateAdapter {

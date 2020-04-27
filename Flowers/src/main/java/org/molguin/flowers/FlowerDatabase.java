@@ -4,9 +4,10 @@ import com.eclipsesource.json.JsonObject;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 public class FlowerDatabase {
     private final Map<FlowerConstants.Species, Map<String, Flower>> speciesMap;
@@ -15,20 +16,21 @@ public class FlowerDatabase {
 
     public FlowerDatabase(JsonObject flower_json) {
         // on instantiation, read the JSON data and set up internal map of flowers
-        this.speciesMap = new HashMap<>();
-        this.originMap = new HashMap<>();
-        this.speciesColorMap = new HashMap<>();
+        this.speciesMap = new ConcurrentHashMap<>();
+        this.originMap = new ConcurrentHashMap<>();
+        this.speciesColorMap = new ConcurrentHashMap<>();
 
         for (FlowerConstants.Species species : FlowerConstants.Species.values()) {
             // prepare mapping species -> set of flowers
-            this.speciesMap.put(species, new HashMap<>());
+            this.speciesMap.put(species, new ConcurrentHashMap<>());
             for (FlowerConstants.Color color : FlowerConstants.Color.values())
-                speciesColorMap.put(new SpeciesColorKey(species, color), new HashSet<>());
+                speciesColorMap.put(new SpeciesColorKey(species, color),
+                        new ConcurrentSkipListSet<>());
         }
 
         for (FlowerConstants.Origin origin : FlowerConstants.Origin.values())
             // prepare mapping origin -> set of flowers
-            this.originMap.put(origin, new HashMap<>());
+            this.originMap.put(origin, new ConcurrentHashMap<>());
 
 
         for (JsonObject.Member species_mb : flower_json) {

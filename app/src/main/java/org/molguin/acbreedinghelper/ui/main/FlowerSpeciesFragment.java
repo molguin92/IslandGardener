@@ -52,22 +52,23 @@ public class FlowerSpeciesFragment extends Fragment {
         rview.setAdapter(this.flowerAdapter);
         rview.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
-        // listen to the flower live data
-        this.mViewModel.flowerListLiveData().observe(this.getViewLifecycleOwner(),
-                new Observer<Collection<Flower>>() {
-                    @Override
-                    public void onChanged(Collection<Flower> flowers) {
-                        flowerAdapter.updateFlowers(flowers);
-                    }
-                });
-
 
         Bundle args = getArguments();
         if (args != null) {
             FlowerConstants.Species species =
                     FlowerConstants.Species.values()[args.getInt(FlowerSpeciesFragment.ARG_SPECIES_ORDINAL)];
-            this.mViewModel.loadFlowersForSpeciesAsync(species);
-        }
 
+            // listen to the flower live data
+            this.mViewModel
+                    .getLiveData(species.name())
+                    .observe(this.getViewLifecycleOwner(),
+                            new Observer<Collection<Flower>>() {
+                                @Override
+                                public void onChanged(Collection<Flower> flowers) {
+                                    flowerAdapter.updateFlowers(flowers);
+                                }
+                            });
+            this.mViewModel.loadFlowersForSpeciesAsync(species, species.name());
+        }
     }
 }
