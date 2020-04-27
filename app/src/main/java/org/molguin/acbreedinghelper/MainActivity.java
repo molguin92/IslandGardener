@@ -6,9 +6,9 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
 
-import org.molguin.acbreedinghelper.ui.main.LoadingFragment;
+import org.molguin.acbreedinghelper.ui.LoadingFragment;
 import org.molguin.acbreedinghelper.model.MainViewModel;
-import org.molguin.acbreedinghelper.ui.main.TabFragment;
+import org.molguin.acbreedinghelper.ui.species.SpeciesTabFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onChanged(Boolean data_loaded) {
                         if (data_loaded) {
                             getSupportFragmentManager().beginTransaction()
-                                    .replace(R.id.container, TabFragment.newInstance())
+                                    .replace(R.id.container, SpeciesTabFragment.newInstance())
                                     .commitNow();
                         }
                     }
@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
                         .commitNow();
             } else {
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.container, TabFragment.newInstance())
+                        .replace(R.id.container, SpeciesTabFragment.newInstance())
                         .commitNow();
             }
         }

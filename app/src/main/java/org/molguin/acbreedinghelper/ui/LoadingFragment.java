@@ -1,4 +1,4 @@
-package org.molguin.acbreedinghelper.ui.main;
+package org.molguin.acbreedinghelper.ui;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

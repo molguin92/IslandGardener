@@ -9,6 +9,7 @@
     <string name="genotype_heading">Genotype</string>
     <string name="origin_heading">Origin</string>
     <string name="placeholder">PLACEHOLDER</string>
+    <string name="close">Close</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

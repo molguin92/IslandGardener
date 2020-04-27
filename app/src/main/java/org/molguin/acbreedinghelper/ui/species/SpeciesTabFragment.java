@@ -1,4 +1,4 @@
-package org.molguin.acbreedinghelper.ui.main;
+package org.molguin.acbreedinghelper.ui.species;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,12 +17,12 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import org.molguin.acbreedinghelper.R;
 import org.molguin.flowers.FlowerConstants;
 
-public class TabFragment extends Fragment {
+public class SpeciesTabFragment extends Fragment {
     FlowerFragmentAdapter flowerFragmentAdapter;
     ViewPager2 viewPager;
 
-    public static TabFragment newInstance() {
-        return new TabFragment();
+    public static SpeciesTabFragment newInstance() {
+        return new SpeciesTabFragment();
     }
 
     @Nullable

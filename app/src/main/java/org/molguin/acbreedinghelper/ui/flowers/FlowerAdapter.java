@@ -1,4 +1,4 @@
-package org.molguin.acbreedinghelper.ui.main;
+package org.molguin.acbreedinghelper.ui.flowers;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,10 +7,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.molguin.acbreedinghelper.R;
@@ -25,7 +25,6 @@ public class FlowerAdapter extends RecyclerView.Adapter<FlowerAdapter.FlowerCard
 
     public FlowerAdapter() {
         this.flowers = new ArrayList<Flower>();
-
     }
 
     public void updateFlowers(Collection<Flower> flowers) {
@@ -41,10 +40,10 @@ public class FlowerAdapter extends RecyclerView.Adapter<FlowerAdapter.FlowerCard
         LayoutInflater inflater = LayoutInflater.from(context);
 
         // Inflate the custom layout
-        View contactView = inflater.inflate(R.layout.flowercard, parent, false);
+        View flower_view = inflater.inflate(R.layout.flower_card, parent, false);
 
         // Return a new holder instance
-        FlowerCard viewHolder = new FlowerCard(contactView);
+        FlowerCard viewHolder = new FlowerCard(flower_view, context);
         return viewHolder;
     }
 
@@ -65,37 +64,37 @@ public class FlowerAdapter extends RecyclerView.Adapter<FlowerAdapter.FlowerCard
         final TextView genotype;
         final TextView origin;
         final LinearLayout card;
+        final Context context;
 
-        FlowerCard(@NonNull View itemView) {
+        FlowerCard(@NonNull View itemView, @NonNull Context context) {
             super(itemView);
             this.icon = itemView.findViewById(R.id.flowerIcon);
             this.color = itemView.findViewById(R.id.flower_color);
             this.genotype = itemView.findViewById(R.id.flower_genotype);
             this.origin = itemView.findViewById(R.id.flower_origin);
-            this.card = itemView.findViewById(R.id.flower_card);
+            this.card = itemView.findViewById(R.id.flower_details);
+
+            this.context = context;
         }
 
-        void setFlower(Flower flower) {
-            final String color = flower.color.name().toLowerCase();
-            final String species = flower.species.name().toLowerCase();
-            final String icon_name = String.format("%s_%s", species, color);
-            final String origin = flower.origin.name().toLowerCase();
-
+        void setFlower(final Flower flower) {
             int icon_id = icon.getContext()
                     .getResources()
-                    .getIdentifier(icon_name, "drawable", icon.getContext().getPackageName());
+                    .getIdentifier(flower.props.icon_name, "drawable", icon.getContext().getPackageName());
 
             this.icon.setImageResource(icon_id);
-            this.color.setText(color);
-            this.genotype.setText(flower.getHumanReadableGenotype());
-            this.origin.setText(origin);
+            this.color.setText(flower.props.color);
+            this.genotype.setText(flower.props.genotype);
+            this.origin.setText(flower.props.origin);
 
             this.card.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast toast = Toast.makeText(v.getContext(), color, Toast.LENGTH_LONG);
-                    toast.show();
-
+                    DialogFragment details = new FlowerDetailsDialog(flower);
+                    details.show(
+                            ((AppCompatActivity) FlowerCard.this.context).getSupportFragmentManager(),
+                            "flower_dialog"
+                    );
                 }
             });
         }

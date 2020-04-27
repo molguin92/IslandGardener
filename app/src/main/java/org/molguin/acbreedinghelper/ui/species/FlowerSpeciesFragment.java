@@ -1,4 +1,4 @@
-package org.molguin.acbreedinghelper.ui.main;
+package org.molguin.acbreedinghelper.ui.species;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.molguin.acbreedinghelper.R;
 import org.molguin.acbreedinghelper.model.MainViewModel;
+import org.molguin.acbreedinghelper.ui.flowers.FlowerAdapter;
 import org.molguin.flowers.Flower;
 import org.molguin.flowers.FlowerConstants;
 
