@@ -1,4 +1,4 @@
-package org.molguin.acbreedinghelper.ui.main;
+package org.molguin.acbreedinghelper.model;
 
 import android.content.Context;
 import android.content.res.AssetManager;

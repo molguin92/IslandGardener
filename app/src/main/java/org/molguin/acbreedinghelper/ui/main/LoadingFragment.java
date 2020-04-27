@@ -11,6 +11,7 @@ import org.molguin.acbreedinghelper.R;
 
 public class LoadingFragment extends Fragment {
     public LoadingFragment() {
+        super();
     }
 
     public static LoadingFragment newInstance() {
