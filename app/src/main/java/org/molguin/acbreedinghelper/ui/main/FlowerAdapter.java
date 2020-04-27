@@ -5,9 +5,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.molguin.acbreedinghelper.R;
@@ -17,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class FlowerAdapter extends RecyclerView.Adapter<FlowerAdapter.ViewHolder> {
+public class FlowerAdapter extends RecyclerView.Adapter<FlowerAdapter.FlowerCard> {
     final private List<Flower> flowers;
 
     public FlowerAdapter() {
@@ -33,7 +36,7 @@ public class FlowerAdapter extends RecyclerView.Adapter<FlowerAdapter.ViewHolder
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public FlowerCard onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
@@ -41,12 +44,12 @@ public class FlowerAdapter extends RecyclerView.Adapter<FlowerAdapter.ViewHolder
         View contactView = inflater.inflate(R.layout.flowercard, parent, false);
 
         // Return a new holder instance
-        ViewHolder viewHolder = new ViewHolder(contactView);
+        FlowerCard viewHolder = new FlowerCard(contactView);
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull FlowerCard holder, int position) {
         // Get the data model based on position
         holder.setFlower(this.flowers.get(position));
     }
@@ -56,26 +59,27 @@ public class FlowerAdapter extends RecyclerView.Adapter<FlowerAdapter.ViewHolder
         return this.flowers.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public final ImageView icon;
+    static class FlowerCard extends RecyclerView.ViewHolder {
+        final ImageView icon;
+        final TextView color;
+        final TextView genotype;
+        final TextView origin;
+        final LinearLayout card;
 
-        public final TextView color;
-        public final TextView genotype;
-        public final TextView origin;
-
-        ViewHolder(@NonNull View itemView) {
+        FlowerCard(@NonNull View itemView) {
             super(itemView);
             this.icon = itemView.findViewById(R.id.flowerIcon);
             this.color = itemView.findViewById(R.id.flower_color);
             this.genotype = itemView.findViewById(R.id.flower_genotype);
             this.origin = itemView.findViewById(R.id.flower_origin);
+            this.card = itemView.findViewById(R.id.flower_card);
         }
 
         void setFlower(Flower flower) {
-            String color = flower.color.name().toLowerCase();
-            String species = flower.species.name().toLowerCase();
-            String icon_name = String.format("%s_%s", species, color);
-            String origin = flower.origin.name().toLowerCase();
+            final String color = flower.color.name().toLowerCase();
+            final String species = flower.species.name().toLowerCase();
+            final String icon_name = String.format("%s_%s", species, color);
+            final String origin = flower.origin.name().toLowerCase();
 
             int icon_id = icon.getContext()
                     .getResources()
@@ -85,6 +89,15 @@ public class FlowerAdapter extends RecyclerView.Adapter<FlowerAdapter.ViewHolder
             this.color.setText(color);
             this.genotype.setText(flower.getHumanReadableGenotype());
             this.origin.setText(origin);
+
+            this.card.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast toast = Toast.makeText(v.getContext(), color, Toast.LENGTH_LONG);
+                    toast.show();
+
+                }
+            });
         }
     }
 }
