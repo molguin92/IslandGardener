@@ -14,13 +14,13 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import org.molguin.acbreedinghelper.R;
-import org.molguin.flowers.Flower;
+import org.molguin.flowers.FlowerDatabase;
 
 public class FlowerDetailsDialog extends DialogFragment {
 
-    final Flower flower;
+    final FlowerDatabase.Flower flower;
 
-    FlowerDetailsDialog(Flower flower) {
+    FlowerDetailsDialog(FlowerDatabase.Flower flower) {
         super();
         this.flower = flower;
     }
@@ -55,11 +55,11 @@ public class FlowerDetailsDialog extends DialogFragment {
 
         int icon_id = view.getContext()
                 .getResources()
-                .getIdentifier(flower.props.icon_name, "drawable", view.getContext().getPackageName());
+                .getIdentifier(flower.icon_name, "drawable", view.getContext().getPackageName());
 
-        colorView.setText(this.flower.props.color);
-        originView.setText(this.flower.props.origin);
-        genotypeView.setText(this.flower.props.genotype);
+        colorView.setText(this.flower.color.name());
+        originView.setText(this.flower.origin.name());
+        genotypeView.setText(this.flower.humanReadableGenotype());
         iconView.setImageResource(icon_id);
     }
 }

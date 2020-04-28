@@ -14,20 +14,20 @@ import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.molguin.acbreedinghelper.R;
-import org.molguin.flowers.Flower;
+import org.molguin.flowers.FlowerDatabase;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 public class FlowerAdapter extends RecyclerView.Adapter<FlowerAdapter.FlowerCard> {
-    final private List<Flower> flowers;
+    final private List<FlowerDatabase.Flower> flowers;
 
     public FlowerAdapter() {
-        this.flowers = new ArrayList<Flower>();
+        this.flowers = new ArrayList<FlowerDatabase.Flower>();
     }
 
-    public void updateFlowers(Collection<Flower> flowers) {
+    public void updateFlowers(Collection<FlowerDatabase.Flower> flowers) {
         this.flowers.clear();
         this.flowers.addAll(flowers);
         this.notifyDataSetChanged();
@@ -77,15 +77,15 @@ public class FlowerAdapter extends RecyclerView.Adapter<FlowerAdapter.FlowerCard
             this.context = context;
         }
 
-        void setFlower(final Flower flower) {
+        void setFlower(final FlowerDatabase.Flower flower) {
             int icon_id = icon.getContext()
                     .getResources()
-                    .getIdentifier(flower.props.icon_name, "drawable", icon.getContext().getPackageName());
+                    .getIdentifier(flower.icon_name, "drawable", icon.getContext().getPackageName());
 
             this.icon.setImageResource(icon_id);
-            this.color.setText(flower.props.color);
-            this.genotype.setText(flower.props.genotype);
-            this.origin.setText(flower.props.origin);
+            this.color.setText(flower.color.name());
+            this.genotype.setText(flower.humanReadableGenotype());
+            this.origin.setText(flower.origin.name());
 
             this.card.setOnClickListener(new View.OnClickListener() {
                 @Override

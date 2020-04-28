@@ -2,18 +2,18 @@ package org.molguin.flowers;
 
 import com.eclipsesource.json.JsonObject;
 
-import org.molguin.Callback;
+import org.molguin.utils.Callback;
+import org.molguin.utils.ReversibleMap;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -22,9 +22,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class FlowerDatabase {
-    private final ConcurrentMap<FlowerConstants.Species, Set<Flower>> speciesMap;
-    private final ConcurrentMap<FlowerConstants.Origin, Set<Flower>> originMap;
-    private final ConcurrentMap<FlowerConstants.Color, Set<Flower>> colorMap;
+    private final ReversibleMap<FlowerGenotype, FlowerConstants.Color> colorMap;
+    private final ReversibleMap<FlowerGenotype, FlowerConstants.Species> speciesMap;
+    private final ReversibleMap<FlowerGenotype, FlowerConstants.Origin> originMap;
     private final ExecutorService execServ;
     private final Dispatcher dispatcher;
 
@@ -34,46 +34,30 @@ public class FlowerDatabase {
         this.execServ.submit(this.dispatcher);
 
         // on instantiation, read the JSON data and set up internal map of flowers
-        this.speciesMap = new ConcurrentHashMap<>();
-        this.originMap = new ConcurrentHashMap<>();
-        this.colorMap = new ConcurrentHashMap<>();
-
-        for (FlowerConstants.Species species : FlowerConstants.Species.values())
-            // prepare mapping species -> set of flowers
-            this.speciesMap.put(species, new ConcurrentSkipListSet<>());
-
-        for (FlowerConstants.Origin origin : FlowerConstants.Origin.values())
-            // prepare mapping origin -> set of flowers
-            this.originMap.put(origin, new ConcurrentSkipListSet<>());
-
-        for (FlowerConstants.Color color : FlowerConstants.Color.values())
-            // prepare mapping color -> set of flowers
-            this.colorMap.put(color, new ConcurrentSkipListSet<>());
+        this.speciesMap = new ReversibleMap<>();
+        this.originMap = new ReversibleMap<>();
+        this.colorMap = new ReversibleMap<>();
 
 
         for (JsonObject.Member species_mb : flower_json) {
             // this for loop populates the species and origin maps with the flowers.
             for (JsonObject.Member encoding_mb : species_mb.getValue().asObject()) {
-                String encoding = encoding_mb.getName();
                 JsonObject props = encoding_mb.getValue().asObject();
 
                 // get properties
-                String color = props.getString("color", null);
-                String origin = props.getString("origin", null);
+                String encoding_str = encoding_mb.getName();
+                String color_str = props.getString("color", null);
+                String origin_str = props.getString("origin", null);
 
-                // build the flower and store the reference both in the species map and in the origin map
-                Flower flower = new Flower(FlowerConstants.Species.valueOf(species_mb.getName()),
-                        FlowerConstants.Color.valueOf(color),
-                        FlowerConstants.Origin.valueOf(origin),
-                        new FlowerGenotype(Integer.parseInt(encoding)));
+                FlowerConstants.Species species = FlowerConstants.Species.valueOf(species_mb.getName());
+                FlowerConstants.Color color = FlowerConstants.Color.valueOf(color_str);
+                FlowerConstants.Origin origin = FlowerConstants.Origin.valueOf(origin_str);
+                Genotype genes = new Genotype(Integer.parseInt(encoding_str));
+                FlowerGenotype flowerGenes = new FlowerGenotype(species, genes);
 
-                Set<Flower> flowers_in_species = this.speciesMap.get(flower.species);
-                Set<Flower> flowers_for_origin = this.originMap.get(flower.origin);
-                Set<Flower> flowers_with_color = this.colorMap.get(flower.color);
-
-                flowers_in_species.add(flower);
-                flowers_for_origin.add(flower);
-                flowers_with_color.add(flower);
+                this.speciesMap.put(flowerGenes, species);
+                this.colorMap.put(flowerGenes, color);
+                this.originMap.put(flowerGenes, origin);
             }
         }
     }
@@ -90,6 +74,39 @@ public class FlowerDatabase {
 
     public Query makeQuery() {
         return new Query();
+    }
+
+    public class Flower implements Comparable<Flower> {
+        public final FlowerConstants.Color color;
+        public final String icon_name;
+        final FlowerConstants.Species species;
+        public final FlowerConstants.Origin origin;
+        final FlowerGenotype genes;
+
+        Flower(FlowerGenotype genes) {
+            this.species = genes.species;
+            this.color = FlowerDatabase.this.colorMap.get(genes);
+            this.origin = FlowerDatabase.this.originMap.get(genes);
+            this.genes = genes;
+            this.icon_name = String.format("%s_%s",
+                    this.species.name().toLowerCase(),
+                    this.color.name().toLowerCase());
+        }
+
+        public String humanReadableGenotype() {
+            return this.genes.genes.human_readable;
+        }
+
+        @Override
+        public int hashCode() {
+            return this.genes.hashCode();
+        }
+
+
+        @Override
+        public int compareTo(Flower other) {
+            return this.genes.compareTo(other.genes);
+        }
     }
 
     private class Dispatcher implements Runnable {
@@ -160,25 +177,29 @@ public class FlowerDatabase {
 
         @Override
         public void run() {
-            Set<Flower> species_results = new HashSet<>();
-            Set<Flower> color_results = new HashSet<>();
-            Set<Flower> origin_results = new HashSet<>();
+            Set<FlowerGenotype> species_results = new HashSet<>();
+            Set<FlowerGenotype> color_results = new HashSet<>();
+            Set<FlowerGenotype> origin_results = new HashSet<>();
 
             for (FlowerConstants.Species s : this.query.species)
-                species_results.addAll(FlowerDatabase.this.speciesMap.get(s));
+                species_results.addAll(FlowerDatabase.this.speciesMap.getKeysForValue(s));
 
             for (FlowerConstants.Color c : this.query.colors)
-                color_results.addAll(FlowerDatabase.this.colorMap.get(c));
+                color_results.addAll(FlowerDatabase.this.colorMap.getKeysForValue(c));
 
             for (FlowerConstants.Origin o : this.query.origins)
-                origin_results.addAll(FlowerDatabase.this.originMap.get(o));
+                origin_results.addAll(FlowerDatabase.this.originMap.getKeysForValue(o));
 
 
             species_results.retainAll(color_results);
             species_results.retainAll(origin_results);
 
+            List<Flower> results = new ArrayList<>(species_results.size());
+            for (FlowerGenotype genes : species_results)
+                results.add(new Flower(genes));
+
             for (Callback<Collection<Flower>, Void> f : this.query.callbacks)
-                f.apply(species_results);
+                f.apply(results);
         }
     }
 

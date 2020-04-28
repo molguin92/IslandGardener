@@ -1,7 +1,6 @@
 package org.molguin.acbreedinghelper.ui.species;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,17 +14,14 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.molguin.Callback;
 import org.molguin.acbreedinghelper.R;
 import org.molguin.acbreedinghelper.model.MainViewModel;
 import org.molguin.acbreedinghelper.ui.flowers.FlowerAdapter;
-import org.molguin.flowers.Flower;
 import org.molguin.flowers.FlowerConstants;
 import org.molguin.flowers.FlowerDatabase;
+import org.molguin.utils.Callback;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class FlowerSpeciesFragment extends Fragment {
     public static final String ARG_SPECIES_ORDINAL = "species";
@@ -65,21 +61,22 @@ public class FlowerSpeciesFragment extends Fragment {
             FlowerConstants.Species species =
                     FlowerConstants.Species.values()[args.getInt(FlowerSpeciesFragment.ARG_SPECIES_ORDINAL)];
 
-            final MutableLiveData<List<Flower>> flowersLD = new MutableLiveData<List<Flower>>();
+            final MutableLiveData<Collection<FlowerDatabase.Flower>> flowersLD =
+                    new MutableLiveData<Collection<FlowerDatabase.Flower>>();
             flowersLD.observe(this.getViewLifecycleOwner(),
-                    new Observer<Collection<Flower>>() {
+                    new Observer<Collection<FlowerDatabase.Flower>>() {
                         @Override
-                        public void onChanged(Collection<Flower> flowers) {
+                        public void onChanged(Collection<FlowerDatabase.Flower> flowers) {
                             flowerAdapter.updateFlowers(flowers);
                             flowersLD.removeObserver(this); // to free up live data for gc
                         }
                     });
 
             FlowerDatabase db = this.mViewModel.getFlowerDB();
-            db.makeQuery().add(species).addCallback(new Callback<Collection<Flower>, Void>() {
+            db.makeQuery().add(species).addCallback(new Callback<Collection<FlowerDatabase.Flower>, Void>() {
                 @Override
-                public Void apply(Collection<Flower> flowers) {
-                    flowersLD.postValue(new ArrayList<Flower>(flowers));
+                public Void apply(Collection<FlowerDatabase.Flower> flowers) {
+                    flowersLD.postValue(flowers);
                     return null;
                 }
             }).submit();
