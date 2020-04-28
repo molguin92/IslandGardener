@@ -80,5 +80,12 @@ public class MainViewModel extends ViewModel {
     @Override
     protected void onCleared() {
         super.onCleared();
+        try {
+            this.factoryLock.lock();
+            if (this.flowerFactory != null) flowerFactory.shutdown();
+        } catch (InterruptedException ignored) {
+        } finally {
+            this.factoryLock.unlock();
+        }
     }
 }
