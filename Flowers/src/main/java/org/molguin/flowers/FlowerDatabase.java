@@ -4,6 +4,7 @@ import com.eclipsesource.json.JsonObject;
 
 import org.molguin.Callback;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -172,6 +173,7 @@ public class FlowerDatabase {
             for (FlowerConstants.Origin o : this.query.origins)
                 origin_results.addAll(FlowerDatabase.this.originMap.get(o));
 
+
             species_results.retainAll(color_results);
             species_results.retainAll(origin_results);
 
@@ -194,6 +196,13 @@ public class FlowerDatabase {
         }
 
         public void submit() {
+            if (this.species.size() == 0)
+                this.species.addAll(Arrays.asList(FlowerConstants.Species.values()));
+            if (this.colors.size() == 0)
+                this.colors.addAll(Arrays.asList(FlowerConstants.Color.values()));
+            if (this.origins.size() == 0)
+                this.origins.addAll(Arrays.asList(FlowerConstants.Origin.values()));
+
             FlowerDatabase.this.submit(this);
         }
 
