@@ -7,7 +7,8 @@ public class Flower implements Comparable<Flower> {
     public final HumanReadableProps props;
     final FlowerGenotype genotype;
 
-    Flower(FlowerConstants.Species species, FlowerConstants.Color color, FlowerConstants.Origin origin, FlowerGenotype genotype) {
+    Flower(FlowerConstants.Species species, FlowerConstants.Color color,
+           FlowerConstants.Origin origin, FlowerGenotype genotype) {
         this.species = species;
         this.color = color;
         this.origin = origin;
@@ -17,19 +18,24 @@ public class Flower implements Comparable<Flower> {
     }
 
     @Override
+    public int compareTo(Flower other) {
+        return Integer.compare(this.hashCode(), other.hashCode());
+    }
+
+    @Override
+    public int hashCode() {
+        return (this.species.ordinal() * 10000) + this.getEncodedGenotype();
+    }
+
+    @Override
     public String toString() {
         return String.format("{%s | %s | %s | %s}",
                 this.species.name(), this.color.name(),
                 this.origin.name(), this.getEncodedGenotype());
     }
 
-    public String getEncodedGenotype() {
+    public int getEncodedGenotype() {
         return this.genotype.encoded;
-    }
-
-    @Override
-    public int compareTo(Flower other) {
-        return this.getEncodedGenotype().compareTo(other.getEncodedGenotype());
     }
 
     public static class HumanReadableProps {

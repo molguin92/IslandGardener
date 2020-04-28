@@ -1,74 +1,26 @@
 package org.molguin.flowers;
 
-import java.util.Locale;
 import java.util.Random;
 
 public class FlowerGenotype {
-    private static class Gene {
-        final int value;
-
-        private Gene(boolean left, boolean right) {
-            if (left != right) {
-                this.value = 1;
-            } else {
-                this.value = right ? 2 : 0;
-            }
-        }
-
-        private Gene(int value) {
-            this.value = value % 3;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return (obj != null)
-                    && (obj.getClass() == this.getClass())
-                    && (obj.hashCode() == this.hashCode());
-        }
-
-        @Override
-        public int hashCode() {
-            return this.value;
-        }
-
-        boolean[] getAlleles() {
-            boolean[] result = new boolean[2];
-            switch (this.value) {
-                case 0:
-                    break;
-                case 1:
-                    result[0] = true;
-                    break;
-                case 2:
-                    result[0] = result[1] = true;
-                    break;
-                default:
-                    throw new RuntimeException(String.valueOf(this.value));
-
-            }
-            return result;
-        }
-
-        Gene[] getAllPossibleOffspring(Gene other) {
-            boolean[] p1 = this.getAlleles();
-            boolean[] p2 = other.getAlleles();
-
-            Gene[] results = new Gene[p1.length * p2.length];
-            int idx = 0;
-            for (boolean a1 : p1)
-                for (boolean a2 : p2)
-                    results[idx++] = new Gene(a1, a2);
-
-            return results;
-        }
-    }
-
+    final int encoded;
+    final String human_readable;
     private final Gene red;
     private final Gene ylw;
     private final Gene wht;
     private final Gene shd;
-    final String encoded;
-    final String human_readable;
+
+    FlowerGenotype(Gene red, Gene ylw, Gene wht, Gene shd) {
+        this.red = red;
+        this.ylw = ylw;
+        this.wht = wht;
+        this.shd = shd;
+
+        this.encoded = (red.value * 1000) + (ylw.value * 100) + (wht.value * 10) + shd.value;
+        this.human_readable = FlowerGenotype.genHumanReadableRep(
+                new Gene[]{this.red, this.ylw, this.wht, this.shd}, new char[]{'r', 'y', 'w', 's'});
+
+    }
 
     private static String genHumanReadableRep(Gene[] genes, char[] symbols) {
         if (genes.length != symbols.length) throw new AssertionError();
@@ -92,31 +44,25 @@ public class FlowerGenotype {
         return rep.toString();
     }
 
-    FlowerGenotype(Gene red, Gene ylw, Gene wht, Gene shd) {
-        this.red = red;
-        this.ylw = ylw;
-        this.wht = wht;
-        this.shd = shd;
-
-        this.encoded = String.format(Locale.getDefault(), "%04d",
-                (red.value * 1000) + (ylw.value * 100) +
-                        (wht.value * 10) + shd.value);
+    FlowerGenotype(int encoded) {
+        this.encoded = encoded % 2223;
+        this.red = new Gene((this.encoded / 1000) % 10);
+        this.ylw = new Gene((this.encoded / 100) % 10);
+        this.wht = new Gene((this.encoded / 10) % 10);
+        this.shd = new Gene(this.encoded % 10);
         this.human_readable = FlowerGenotype.genHumanReadableRep(
                 new Gene[]{this.red, this.ylw, this.wht, this.shd}, new char[]{'r', 'y', 'w', 's'});
 
     }
 
-    FlowerGenotype(String encoded) {
-        this.encoded = encoded.substring(0, 4);
-        char[] values = this.encoded.toCharArray();
+    @Override
+    public int hashCode() {
+        return this.encoded;
+    }
 
-        this.red = new Gene(Integer.parseInt(String.valueOf(values[0])));
-        this.ylw = new Gene(Integer.parseInt(String.valueOf(values[1])));
-        this.wht = new Gene(Integer.parseInt(String.valueOf(values[2])));
-        this.shd = new Gene(Integer.parseInt(String.valueOf(values[3])));
-        this.human_readable = FlowerGenotype.genHumanReadableRep(
-                new Gene[]{this.red, this.ylw, this.wht, this.shd}, new char[]{'r', 'y', 'w', 's'});
-
+    FlowerGenotype getRandomOffspring(FlowerGenotype other) {
+        FlowerGenotype[] offspring = this.getAllPossibleOffspring(other);
+        return offspring[new Random().nextInt(offspring.length)];
     }
 
     FlowerGenotype[] getAllPossibleOffspring(FlowerGenotype other) {
@@ -140,8 +86,66 @@ public class FlowerGenotype {
         return offspring;
     }
 
-    FlowerGenotype getRandomOffspring(FlowerGenotype other) {
-        FlowerGenotype[] offspring = this.getAllPossibleOffspring(other);
-        return offspring[new Random().nextInt(offspring.length)];
+    private static class Gene {
+        final int value;
+        final byte[] alleles;
+
+        private Gene(byte left, byte right) {
+            if (left != right) {
+                this.alleles = new byte[]{1, 0};
+            } else {
+                this.alleles = right > 0 ? new byte[]{1, 1} : new byte[]{0, 0};
+            }
+            this.value = this.alleles[0] + this.alleles[1];
+        }
+
+        private Gene(int value) {
+            this.value = value % 3;
+            switch (this.value) {
+                case 0:
+                    this.alleles = new byte[]{0, 0};
+                    break;
+                case 1:
+                    this.alleles = new byte[]{1, 0};
+                    break;
+                case 2:
+                    this.alleles = new byte[]{1, 1};
+                    break;
+                default:
+                    throw new RuntimeException();
+            }
+        }
+
+        Gene[] getAllPossibleOffspring(Gene other) {
+            byte[] p1 = this.getAlleles();
+            byte[] p2 = other.getAlleles();
+
+            Gene[] results = new Gene[p1.length * p2.length];
+            int idx = 0;
+            for (byte a1 : p1)
+                for (byte a2 : p2)
+                    results[idx++] = new Gene(a1, a2);
+
+            return results;
+        }
+
+        byte[] getAlleles() {
+            return this.alleles;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return (obj != null)
+                    && (obj.getClass() == this.getClass())
+                    && (obj.hashCode() == this.hashCode());
+        }
+
+
+        @Override
+        public int hashCode() {
+            return this.value;
+        }
+
+
     }
 }

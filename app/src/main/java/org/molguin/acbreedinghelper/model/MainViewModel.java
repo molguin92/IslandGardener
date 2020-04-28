@@ -98,14 +98,15 @@ public class MainViewModel extends ViewModel {
         this.exec.submit(new Runnable() {
             @Override
             public void run() {
-                List<Flower> flowers =
-                        new ArrayList<Flower>(flowerFactory.getAllFlowersForSpecies(species));
-                Collections.sort(flowers);
+                try {
+                    List<Flower> flowers = new ArrayList<Flower>(flowerFactory.getAllFlowersForSpecies(species));
+                    Collections.sort(flowers);
 
-                MutableLiveData<Collection<Flower>> liveData = flowerListLiveDatas.get(resultLiveDataID);
-                if (liveData != null) {
-                    liveData.postValue(flowers);
-                    Log.w("Adapter", "Added " + flowers.size() + " flowers.");
+                    MutableLiveData<Collection<Flower>> liveData = flowerListLiveDatas.get(resultLiveDataID);
+                    if (liveData != null)
+                        liveData.postValue(flowers);
+                } catch (Exception e) {
+                    Log.e("Exception", e.toString());
                 }
             }
         });
