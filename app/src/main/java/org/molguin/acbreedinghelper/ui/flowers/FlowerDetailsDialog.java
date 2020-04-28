@@ -57,8 +57,8 @@ public class FlowerDetailsDialog extends DialogFragment {
                 .getResources()
                 .getIdentifier(flower.icon_name, "drawable", view.getContext().getPackageName());
 
-        colorView.setText(this.flower.color.name());
-        originView.setText(this.flower.origin.name());
+        colorView.setText(this.flower.color.name().toLowerCase());
+        originView.setText(this.flower.origin.name().toLowerCase());
         genotypeView.setText(this.flower.humanReadableGenotype());
         iconView.setImageResource(icon_id);
     }

@@ -83,9 +83,9 @@ public class FlowerAdapter extends RecyclerView.Adapter<FlowerAdapter.FlowerCard
                     .getIdentifier(flower.icon_name, "drawable", icon.getContext().getPackageName());
 
             this.icon.setImageResource(icon_id);
-            this.color.setText(flower.color.name());
+            this.color.setText(flower.color.name().toLowerCase());
             this.genotype.setText(flower.humanReadableGenotype());
-            this.origin.setText(flower.origin.name());
+            this.origin.setText(flower.origin.name().toLowerCase());
 
             this.card.setOnClickListener(new View.OnClickListener() {
                 @Override

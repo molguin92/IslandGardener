@@ -43,7 +43,7 @@ public class SpeciesTabFragment extends Fragment {
             @Override
             public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
                 int species_pos = position % FlowerConstants.Species.values().length;
-                tab.setText(FlowerConstants.Species.values()[species_pos].name().toUpperCase());
+                tab.setText(FlowerConstants.Species.values()[species_pos].namePlural());
             }
         }).attach();
     }

@@ -9,7 +9,15 @@ public class FlowerConstants {
         PANSY,
         ROSE,
         TULIP,
-        WINDFLOWER
+        WINDFLOWER;
+
+        public String namePlural() {
+            String name = this.name();
+            if (name.endsWith("Y")) {
+                name = name.substring(0, name.length() - 1) + "IE";
+            }
+            return name + "S";
+        }
     }
 
     public enum Color {
