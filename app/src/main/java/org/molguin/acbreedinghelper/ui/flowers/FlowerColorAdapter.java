@@ -130,6 +130,7 @@ public class FlowerColorAdapter extends RecyclerView.Adapter<FlowerColorAdapter.
         }
 
         void setColorCollection(final FlowerColorCollection colorCollection) {
+            // set up the display
             int icon_id = icon.getContext()
                     .getResources()
                     .getIdentifier(colorCollection.icon_name,
@@ -141,15 +142,24 @@ public class FlowerColorAdapter extends RecyclerView.Adapter<FlowerColorAdapter.
             this.genotypes_counts_view.setText(
                     String.format(this.variants_fmt_string, colorCollection.flowers.size())
             );
+
+            // add a listener to switch to a fragment with details
+            this.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                }
+            });
         }
     }
 
     private static class FlowerColorCollection {
+        final FlowerConstants.Species species;
         final FlowerConstants.Color color;
         final Set<FlowerDatabase.Flower> flowers;
         final String icon_name;
 
         FlowerColorCollection(FlowerConstants.Species species, FlowerConstants.Color color) {
+            this.species = species;
             this.color = color;
             this.flowers = new HashSet<FlowerDatabase.Flower>();
             this.icon_name = String.format("%s_%s",
