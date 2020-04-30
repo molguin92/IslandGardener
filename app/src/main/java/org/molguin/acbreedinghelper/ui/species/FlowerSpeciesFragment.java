@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.molguin.acbreedinghelper.R;
 import org.molguin.acbreedinghelper.model.MainViewModel;
-import org.molguin.acbreedinghelper.ui.flowers.FlowerColorAdapter;
 import org.molguin.acbreedinghelper.flowers.FlowerConstants;
 
 public class FlowerSpeciesFragment extends Fragment {
