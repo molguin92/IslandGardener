@@ -8,15 +8,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SortedList;
+import androidx.recyclerview.widget.SortedListAdapterCallback;
 
 import org.molguin.acbreedinghelper.R;
-import org.molguin.acbreedinghelper.ui.species.FlowerSpeciesFragment;
 import org.molguin.acbreedinghelper.flowers.FlowerConstants;
 import org.molguin.acbreedinghelper.flowers.FlowerDatabase;
+import org.molguin.acbreedinghelper.ui.species.FlowerSpeciesFragment;
 import org.molguin.acbreedinghelper.utils.Callback;
 
 import java.util.Collection;
@@ -34,72 +33,34 @@ public class FlowerColorAdapter extends RecyclerView.Adapter<FlowerColorAdapter.
                               final FlowerSpeciesFragment parentFragment) {
         super();
         this.variants_fmt_string = parentFragment.getResources().getString(R.string.variants_fmt_string);
-        this.colorCollections =
-                new SortedList<FlowerColorCollection>(
-                        FlowerColorCollection.class,
-                        new SortedList.Callback<FlowerColorCollection>() {
-                            @Override
-                            public void onInserted(int position, int count) {
-                                for (int i = position; i < position + count; i++)
-                                    FlowerColorAdapter.this.notifyItemInserted(i);
-                            }
-
-                            @Override
-                            public void onRemoved(int position, int count) {
-                                for (int i = 0; i < count; i++)
-                                    FlowerColorAdapter.this.notifyItemRemoved(position);
-                            }
-
-                            @Override
-                            public void onMoved(int fromPosition, int toPosition) {
-                                FlowerColorAdapter.this.notifyItemMoved(fromPosition, toPosition);
-                            }
-
-                            @Override
-                            public int compare(FlowerColorCollection o1, FlowerColorCollection o2) {
-                                return o1.color.compareTo(o2.color);
-                            }
-
-                            @Override
-                            public void onChanged(int position, int count) {
-                                for (int i = position; i < position + count; i++)
-                                    FlowerColorAdapter.this.notifyItemChanged(i);
-                            }
-
-                            @Override
-                            public boolean areContentsTheSame(FlowerColorCollection oldItem,
-                                                              FlowerColorCollection newItem) {
-                                return (oldItem.color == newItem.color) &&
-                                        (oldItem.flowers.equals(newItem.flowers));
-                            }
-
-                            @Override
-                            public boolean areItemsTheSame(FlowerColorCollection item1,
-                                                           FlowerColorCollection item2) {
-                                return item1.color == item2.color;
-                            }
-                        });
-
-        // asynchronously load flowers
-        final MutableLiveData<Collection<FlowerColorCollection>> collectionLiveData =
-                new MutableLiveData<Collection<FlowerColorCollection>>();
-
-        collectionLiveData.observe(parentFragment.getViewLifecycleOwner(),
-                new Observer<Collection<FlowerColorCollection>>() {
+        SortedList.Callback<FlowerColorCollection> callback =
+                new SortedListAdapterCallback<FlowerColorCollection>(this) {
                     @Override
-                    public void onChanged(Collection<FlowerColorCollection> flowerColorCollections) {
-                        FlowerColorAdapter.this.colorCollections.addAll(flowerColorCollections);
-                        collectionLiveData.removeObserver(this);
-                        parentFragment.notifyFinishedLoading();
+                    public int compare(FlowerColorCollection o1, FlowerColorCollection o2) {
+                        return o1.color.compareTo(o2.color);
                     }
-                });
 
+                    @Override
+                    public boolean areContentsTheSame(FlowerColorCollection oldItem, FlowerColorCollection newItem) {
+                        return this.areItemsTheSame(oldItem, newItem) &&
+                                (oldItem.flowers.equals(newItem.flowers));
+                    }
+
+                    @Override
+                    public boolean areItemsTheSame(FlowerColorCollection item1, FlowerColorCollection item2) {
+                        return item1.color == item2.color;
+                    }
+                };
+
+        this.colorCollections =
+                new SortedList<FlowerColorCollection>(FlowerColorCollection.class, callback);
+        // asynchronously load flowers
         db.makeQuery()
                 .add(species)
                 .addCallback(new Callback<Collection<FlowerDatabase.Flower>, Void>() {
                     @Override
                     public Void apply(Collection<FlowerDatabase.Flower> flowers) {
-                        Map<FlowerConstants.Color, FlowerColorCollection> colors =
+                        final Map<FlowerConstants.Color, FlowerColorCollection> colors =
                                 new HashMap<FlowerConstants.Color, FlowerColorCollection>();
 
                         for (FlowerDatabase.Flower flower : flowers) {
@@ -112,7 +73,17 @@ public class FlowerColorAdapter extends RecyclerView.Adapter<FlowerColorAdapter.
                         }
 
                         // notify flowers loaded
-                        collectionLiveData.postValue(colors.values());
+
+                        parentFragment.getActivity().runOnUiThread(
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        FlowerColorAdapter.this.colorCollections.addAll(colors.values());
+                                        parentFragment.notifyFinishedLoading();
+                                    }
+                                }
+                        );
+
                         return null;
                     }
                 })
