@@ -15,7 +15,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import org.molguin.acbreedinghelper.R;
-import org.molguin.flowers.FlowerConstants;
+import org.molguin.acbreedinghelper.flowers.FlowerConstants;
 
 public class SpeciesTabFragment extends Fragment {
     FlowerFragmentAdapter flowerFragmentAdapter;

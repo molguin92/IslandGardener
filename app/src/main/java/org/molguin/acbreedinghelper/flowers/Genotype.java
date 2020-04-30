@@ -1,4 +1,4 @@
-package org.molguin.flowers;
+package org.molguin.acbreedinghelper.flowers;
 
 import java.util.Random;
 

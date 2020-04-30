@@ -15,9 +15,9 @@ import androidx.recyclerview.widget.SortedList;
 
 import org.molguin.acbreedinghelper.R;
 import org.molguin.acbreedinghelper.ui.species.FlowerSpeciesFragment;
-import org.molguin.flowers.FlowerConstants;
-import org.molguin.flowers.FlowerDatabase;
-import org.molguin.utils.Callback;
+import org.molguin.acbreedinghelper.flowers.FlowerConstants;
+import org.molguin.acbreedinghelper.flowers.FlowerDatabase;
+import org.molguin.acbreedinghelper.utils.Callback;
 
 import java.util.Collection;
 import java.util.HashMap;

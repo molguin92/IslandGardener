@@ -1,4 +1,4 @@
-package org.molguin.utils;
+package org.molguin.acbreedinghelper.utils;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -8,10 +8,10 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 public class ReversibleMap<K extends Comparable, V extends Comparable> extends ConcurrentHashMap<K, V> {
-    private final ConcurrentMap<V, Set<K>> revmap = new ConcurrentHashMap<>();
+    private final ConcurrentMap<V, Set<K>> revmap = new ConcurrentHashMap<V, Set<K>>();
 
     public Set<K> getKeysForValue(V v) {
-        return new HashSet<>(this.revmap.get(v));
+        return new HashSet<K>(this.revmap.get(v));
     }
 
     @Override
@@ -43,7 +43,7 @@ public class ReversibleMap<K extends Comparable, V extends Comparable> extends C
 
     private void putIntoRevMap(K k, V v) {
         Set<K> kset = this.revmap.get(v);
-        if (kset == null) kset = new ConcurrentSkipListSet<>();
+        if (kset == null) kset = new ConcurrentSkipListSet<K>();
         kset.add(k);
         this.revmap.put(v, kset);
     }
