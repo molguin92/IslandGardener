@@ -1,10 +1,11 @@
-package org.molguin.acbreedinghelper;
+package org.molguin.acbreedinghelper.ui;
 
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import org.molguin.acbreedinghelper.R;
 import org.molguin.acbreedinghelper.model.MainViewModel;
 import org.molguin.acbreedinghelper.ui.species.SpeciesTabFragment;
 
