@@ -7,6 +7,6 @@
     android:layout_margin="5dp"
     card_view:cardCornerRadius="4dp">
 
-    <include layout="@layout/flower_details" />
+    <include layout="@layout/color_holder" />
 
 </androidx.cardview.widget.CardView>
