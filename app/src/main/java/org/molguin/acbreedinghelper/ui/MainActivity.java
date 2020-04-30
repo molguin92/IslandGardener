@@ -6,20 +6,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import org.molguin.acbreedinghelper.R;
-import org.molguin.acbreedinghelper.model.MainViewModel;
+import org.molguin.acbreedinghelper.model.MainActivityViewModel;
 import org.molguin.acbreedinghelper.ui.species.SpeciesTabFragment;
 
 public class MainActivity extends AppCompatActivity {
 
-    private MainViewModel model;
+    private MainActivityViewModel model;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
         if (savedInstanceState == null) {
-            MainViewModel.Factory factory = new MainViewModel.Factory(this.getApplication());
-            this.model = new ViewModelProvider(this, factory).get(MainViewModel.class);
+            MainActivityViewModel.Factory factory = new MainActivityViewModel.Factory(this.getApplication());
+            this.model = new ViewModelProvider(this, factory).get(MainActivityViewModel.class);
             this.getSupportFragmentManager().beginTransaction()
                     .replace(R.id.container, SpeciesTabFragment.newInstance())
                     .commitNow();

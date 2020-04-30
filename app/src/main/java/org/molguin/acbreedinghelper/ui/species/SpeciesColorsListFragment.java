@@ -14,12 +14,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.molguin.acbreedinghelper.R;
-import org.molguin.acbreedinghelper.model.MainViewModel;
 import org.molguin.acbreedinghelper.flowers.FlowerConstants;
+import org.molguin.acbreedinghelper.model.ColorListViewModel;
+import org.molguin.acbreedinghelper.model.MainActivityViewModel;
+import org.molguin.acbreedinghelper.utils.Callback;
+
+import java.util.Collection;
 
 public class SpeciesColorsListFragment extends Fragment {
     public static final String ARG_SPECIES_ORDINAL = "species";
-    private MainViewModel mViewModel;
 
 
     public SpeciesColorsListFragment() {
@@ -40,7 +43,8 @@ public class SpeciesColorsListFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        this.mViewModel = new ViewModelProvider(this.getActivity()).get(MainViewModel.class);
+        MainActivityViewModel mViewModel = new ViewModelProvider(this.getActivity()).get(MainActivityViewModel.class);
+
         ProgressBar pbar = view.findViewById(R.id.progressbar);
         pbar.setIndeterminate(true);
         pbar.setVisibility(View.VISIBLE);
@@ -51,15 +55,33 @@ public class SpeciesColorsListFragment extends Fragment {
                     FlowerConstants.Species.values()[args.getInt(SpeciesColorsListFragment.ARG_SPECIES_ORDINAL)];
 
             RecyclerView rview = this.getView().findViewById(R.id.resultview);
+            final ColorListAdapter adapter = new ColorListAdapter();
             rview.setVisibility(View.INVISIBLE);
-            rview.setAdapter(new ColorListAdapter(species,
-                    this.mViewModel.getFlowerDB(),
-                    this));
+            rview.setAdapter(adapter);
             rview.setLayoutManager(new LinearLayoutManager(this.getContext()));
+
+            ColorListViewModel.Factory factory = new ColorListViewModel.Factory(mViewModel.getFlowerDB(), species);
+            ColorListViewModel cViewModel = new ViewModelProvider(this, factory).get(ColorListViewModel.class);
+
+            cViewModel.loadData(new Callback<Collection<ColorListViewModel.FlowerColorCollection>, Void>() {
+                @Override
+                public Void apply(final Collection<ColorListViewModel.FlowerColorCollection> flowerColorCollections) {
+                    SpeciesColorsListFragment.this
+                            .getActivity()
+                            .runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    adapter.colorCollections.addAll(flowerColorCollections);
+                                    SpeciesColorsListFragment.this.notifyFinishedLoading();
+                                }
+                            });
+                    return null;
+                }
+            });
         }
     }
 
-    public void notifyFinishedLoading() {
+    private void notifyFinishedLoading() {
         ProgressBar pbar = this.getView().findViewById(R.id.progressbar);
         pbar.setIndeterminate(true);
         pbar.setVisibility(View.INVISIBLE);

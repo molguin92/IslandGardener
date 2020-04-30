@@ -10,10 +10,10 @@ import androidx.lifecycle.ViewModelProvider;
 
 import org.molguin.acbreedinghelper.flowers.FlowerDatabase;
 
-public class MainViewModel extends ViewModel {
+public class MainActivityViewModel extends ViewModel {
     private final FlowerDatabase flowerDB;
 
-    public MainViewModel(final AssetManager am, final Context appContext) {
+    public MainActivityViewModel(final AssetManager am, final Context appContext) {
         super();
         this.flowerDB = new FlowerDatabase(am, appContext);
     }
@@ -34,8 +34,8 @@ public class MainViewModel extends ViewModel {
         @NonNull
         @Override
         public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-            if (modelClass.isAssignableFrom(MainViewModel.class)) {
-                return (T) new MainViewModel(this.am, this.appContext);
+            if (modelClass.isAssignableFrom(MainActivityViewModel.class)) {
+                return (T) new MainActivityViewModel(this.am, this.appContext);
             }
             throw new IllegalArgumentException("Unknown ViewModel class");
         }

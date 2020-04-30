@@ -10,83 +10,23 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SortedList;
-import androidx.recyclerview.widget.SortedListAdapterCallback;
 
 import org.molguin.acbreedinghelper.R;
 import org.molguin.acbreedinghelper.flowers.FlowerConstants;
 import org.molguin.acbreedinghelper.flowers.FlowerDatabase;
-import org.molguin.acbreedinghelper.utils.Callback;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import org.molguin.acbreedinghelper.model.ColorListViewModel;
 
 public class ColorListAdapter extends RecyclerView.Adapter<ColorListAdapter.FlowerColorCard> {
-    final SortedList<FlowerColorCollection> colorCollections;
-    final String variants_fmt_string;
+    public final SortedList<ColorListViewModel.FlowerColorCollection> colorCollections;
 
-    public ColorListAdapter(final FlowerConstants.Species species,
-                            FlowerDatabase db,
-                            final SpeciesColorsListFragment parentFragment) {
+    public ColorListAdapter() {
         super();
-        this.variants_fmt_string = parentFragment.getResources().getString(R.string.variants_fmt_string);
-        SortedList.Callback<FlowerColorCollection> callback =
-                new SortedListAdapterCallback<FlowerColorCollection>(this) {
-                    @Override
-                    public int compare(FlowerColorCollection o1, FlowerColorCollection o2) {
-                        return o1.color.compareTo(o2.color);
-                    }
-
-                    @Override
-                    public boolean areContentsTheSame(FlowerColorCollection oldItem, FlowerColorCollection newItem) {
-                        return this.areItemsTheSame(oldItem, newItem) &&
-                                (oldItem.flowers.equals(newItem.flowers));
-                    }
-
-                    @Override
-                    public boolean areItemsTheSame(FlowerColorCollection item1, FlowerColorCollection item2) {
-                        return item1.color == item2.color;
-                    }
-                };
+        SortedList.Callback<ColorListViewModel.FlowerColorCollection> callback =
+                new ColorListViewModel.SortedListColorCollectionCallback(this);
 
         this.colorCollections =
-                new SortedList<FlowerColorCollection>(FlowerColorCollection.class, callback);
-        // asynchronously load flowers
-        db.makeQuery()
-                .add(species)
-                .addCallback(new Callback<Collection<FlowerDatabase.Flower>, Void>() {
-                    @Override
-                    public Void apply(Collection<FlowerDatabase.Flower> flowers) {
-                        final Map<FlowerConstants.Color, FlowerColorCollection> colors =
-                                new HashMap<FlowerConstants.Color, FlowerColorCollection>();
-
-                        for (FlowerDatabase.Flower flower : flowers) {
-                            FlowerColorCollection colorCollection = colors.get(flower.color);
-                            if (colorCollection == null) {
-                                colorCollection = new FlowerColorCollection(species, flower.color);
-                                colors.put(flower.color, colorCollection);
-                            }
-                            colorCollection.flowers.add(flower);
-                        }
-
-                        // notify flowers loaded
-
-                        parentFragment.getActivity().runOnUiThread(
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        ColorListAdapter.this.colorCollections.addAll(colors.values());
-                                        parentFragment.notifyFinishedLoading();
-                                    }
-                                }
-                        );
-
-                        return null;
-                    }
-                })
-                .submit();
+                new SortedList<ColorListViewModel.FlowerColorCollection>(
+                        ColorListViewModel.FlowerColorCollection.class, callback);
     }
 
     @NonNull
@@ -99,7 +39,7 @@ public class ColorListAdapter extends RecyclerView.Adapter<ColorListAdapter.Flow
         View flower_view = inflater.inflate(R.layout.color_card, parent, false);
 
         // Return a new holder instance
-        FlowerColorCard viewHolder = new FlowerColorCard(flower_view, this.variants_fmt_string);
+        FlowerColorCard viewHolder = new FlowerColorCard(flower_view);
         return viewHolder;
     }
 
@@ -119,16 +59,16 @@ public class ColorListAdapter extends RecyclerView.Adapter<ColorListAdapter.Flow
         final TextView genotypes_counts_view;
         final String variants_fmt_string;
 
-        FlowerColorCard(@NonNull View itemView, String variants_fmt_string) {
+        FlowerColorCard(@NonNull View itemView) {
             super(itemView);
             this.icon = itemView.findViewById(R.id.flower_icon);
             this.color = itemView.findViewById(R.id.flower_color);
             this.genotypes_counts_view = itemView.findViewById(R.id.variants_heading);
-            this.variants_fmt_string = variants_fmt_string;
+            this.variants_fmt_string = itemView.getContext().getResources().getString(R.string.variants_fmt_string);
 
         }
 
-        void setColorCollection(final FlowerColorCollection colorCollection) {
+        void setColorCollection(final ColorListViewModel.FlowerColorCollection colorCollection) {
             // set up the display
             int icon_id = icon.getContext()
                     .getResources()
@@ -148,22 +88,6 @@ public class ColorListAdapter extends RecyclerView.Adapter<ColorListAdapter.Flow
                 public void onClick(View v) {
                 }
             });
-        }
-    }
-
-    private static class FlowerColorCollection {
-        final FlowerConstants.Species species;
-        final FlowerConstants.Color color;
-        final Set<FlowerDatabase.Flower> flowers;
-        final String icon_name;
-
-        FlowerColorCollection(FlowerConstants.Species species, FlowerConstants.Color color) {
-            this.species = species;
-            this.color = color;
-            this.flowers = new HashSet<FlowerDatabase.Flower>();
-            this.icon_name = String.format("%s_%s",
-                    species.name().toLowerCase(),
-                    color.name().toLowerCase());
         }
     }
 }
