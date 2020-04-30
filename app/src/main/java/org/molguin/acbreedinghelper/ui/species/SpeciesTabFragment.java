@@ -57,9 +57,9 @@ public class SpeciesTabFragment extends Fragment {
         @NonNull
         @Override
         public Fragment createFragment(int position) {
-            Fragment fragment = FlowerSpeciesFragment.newInstance();
+            Fragment fragment = SpeciesColorsListFragment.newInstance();
             Bundle args = new Bundle();
-            args.putInt(FlowerSpeciesFragment.ARG_SPECIES_ORDINAL,
+            args.putInt(SpeciesColorsListFragment.ARG_SPECIES_ORDINAL,
                     position % FlowerConstants.Species.values().length);
             fragment.setArguments(args);
             return fragment;

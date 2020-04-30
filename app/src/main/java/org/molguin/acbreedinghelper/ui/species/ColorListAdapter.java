@@ -23,13 +23,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class FlowerColorAdapter extends RecyclerView.Adapter<FlowerColorAdapter.FlowerColorCard> {
+public class ColorListAdapter extends RecyclerView.Adapter<ColorListAdapter.FlowerColorCard> {
     final SortedList<FlowerColorCollection> colorCollections;
     final String variants_fmt_string;
 
-    public FlowerColorAdapter(final FlowerConstants.Species species,
-                              FlowerDatabase db,
-                              final FlowerSpeciesFragment parentFragment) {
+    public ColorListAdapter(final FlowerConstants.Species species,
+                            FlowerDatabase db,
+                            final SpeciesColorsListFragment parentFragment) {
         super();
         this.variants_fmt_string = parentFragment.getResources().getString(R.string.variants_fmt_string);
         SortedList.Callback<FlowerColorCollection> callback =
@@ -77,7 +77,7 @@ public class FlowerColorAdapter extends RecyclerView.Adapter<FlowerColorAdapter.
                                 new Runnable() {
                                     @Override
                                     public void run() {
-                                        FlowerColorAdapter.this.colorCollections.addAll(colors.values());
+                                        ColorListAdapter.this.colorCollections.addAll(colors.values());
                                         parentFragment.notifyFinishedLoading();
                                     }
                                 }

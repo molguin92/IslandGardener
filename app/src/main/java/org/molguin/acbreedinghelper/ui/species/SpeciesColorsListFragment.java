@@ -17,17 +17,17 @@ import org.molguin.acbreedinghelper.R;
 import org.molguin.acbreedinghelper.model.MainViewModel;
 import org.molguin.acbreedinghelper.flowers.FlowerConstants;
 
-public class FlowerSpeciesFragment extends Fragment {
+public class SpeciesColorsListFragment extends Fragment {
     public static final String ARG_SPECIES_ORDINAL = "species";
     private MainViewModel mViewModel;
 
 
-    public FlowerSpeciesFragment() {
+    public SpeciesColorsListFragment() {
         super();
     }
 
-    public static FlowerSpeciesFragment newInstance() {
-        return new FlowerSpeciesFragment();
+    public static SpeciesColorsListFragment newInstance() {
+        return new SpeciesColorsListFragment();
     }
 
     @Nullable
@@ -48,11 +48,11 @@ public class FlowerSpeciesFragment extends Fragment {
         Bundle args = getArguments();
         if (args != null) {
             FlowerConstants.Species species =
-                    FlowerConstants.Species.values()[args.getInt(FlowerSpeciesFragment.ARG_SPECIES_ORDINAL)];
+                    FlowerConstants.Species.values()[args.getInt(SpeciesColorsListFragment.ARG_SPECIES_ORDINAL)];
 
             RecyclerView rview = this.getView().findViewById(R.id.resultview);
             rview.setVisibility(View.INVISIBLE);
-            rview.setAdapter(new FlowerColorAdapter(species,
+            rview.setAdapter(new ColorListAdapter(species,
                     this.mViewModel.getFlowerDB(),
                     this));
             rview.setLayoutManager(new LinearLayoutManager(this.getContext()));
