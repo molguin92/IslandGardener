@@ -50,19 +50,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:text="@string/variants_heading"
-        android:textSize="18sp"
-        android:textStyle="italic" />
-
-    <TextView
-        app:layout_constraintStart_toEndOf="@id/variants_heading"
-        app:layout_constraintTop_toTopOf="@id/variants_heading"
-        android:layout_marginStart="15dp"
-        android:id="@+id/flower_genotypes_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:text="@string/placeholder"
+        android:text="@string/variants_fmt_string"
         android:textSize="18sp"
         android:textStyle="italic" />
 

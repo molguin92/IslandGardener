@@ -29,7 +29,7 @@ public class FlowerDatabase {
     private final Dispatcher dispatcher;
 
     public FlowerDatabase(JsonObject flower_json) {
-        this.execServ = Executors.newFixedThreadPool(3);
+        this.execServ = Executors.newFixedThreadPool(FlowerConstants.Species.values().length / 2);
         this.dispatcher = new Dispatcher();
         this.execServ.submit(this.dispatcher);
 
@@ -79,8 +79,8 @@ public class FlowerDatabase {
     public class Flower implements Comparable<Flower> {
         public final FlowerConstants.Color color;
         public final String icon_name;
-        final FlowerConstants.Species species;
         public final FlowerConstants.Origin origin;
+        final FlowerConstants.Species species;
         final FlowerGenotype genes;
 
         Flower(FlowerGenotype genes) {

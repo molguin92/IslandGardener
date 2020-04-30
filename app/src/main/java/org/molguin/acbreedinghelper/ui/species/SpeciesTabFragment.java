@@ -37,6 +37,7 @@ public class SpeciesTabFragment extends Fragment {
         flowerFragmentAdapter = new FlowerFragmentAdapter(this);
         viewPager = view.findViewById(R.id.flower_pager);
         viewPager.setAdapter(flowerFragmentAdapter);
+        viewPager.setOffscreenPageLimit(FlowerConstants.Species.values().length);
 
         TabLayout tabLayout = view.findViewById(R.id.tab_layout);
         new TabLayoutMediator(tabLayout, viewPager, new TabLayoutMediator.TabConfigurationStrategy() {

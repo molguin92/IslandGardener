@@ -27,11 +27,13 @@ import java.util.Set;
 
 public class FlowerColorAdapter extends RecyclerView.Adapter<FlowerColorAdapter.FlowerColorCard> {
     final SortedList<FlowerColorCollection> colorCollections;
+    final String variants_fmt_string;
 
     public FlowerColorAdapter(final FlowerConstants.Species species,
                               FlowerDatabase db,
                               Fragment parentFragment) {
         super();
+        this.variants_fmt_string = parentFragment.getResources().getString(R.string.variants_fmt_string);
         this.colorCollections =
                 new SortedList<FlowerColorCollection>(
                         FlowerColorCollection.class,
@@ -126,7 +128,7 @@ public class FlowerColorAdapter extends RecyclerView.Adapter<FlowerColorAdapter.
         View flower_view = inflater.inflate(R.layout.color_card, parent, false);
 
         // Return a new holder instance
-        FlowerColorCard viewHolder = new FlowerColorCard(flower_view);
+        FlowerColorCard viewHolder = new FlowerColorCard(flower_view, this.variants_fmt_string);
         return viewHolder;
     }
 
@@ -143,13 +145,15 @@ public class FlowerColorAdapter extends RecyclerView.Adapter<FlowerColorAdapter.
     static class FlowerColorCard extends RecyclerView.ViewHolder {
         final ImageView icon;
         final TextView color;
-        final TextView variant_counts;
+        final TextView genotypes_counts_view;
+        final String variants_fmt_string;
 
-        FlowerColorCard(@NonNull View itemView) {
+        FlowerColorCard(@NonNull View itemView, String variants_fmt_string) {
             super(itemView);
             this.icon = itemView.findViewById(R.id.flower_icon);
             this.color = itemView.findViewById(R.id.flower_color);
-            this.variant_counts = itemView.findViewById(R.id.flower_genotypes_count);
+            this.genotypes_counts_view = itemView.findViewById(R.id.variants_heading);
+            this.variants_fmt_string = variants_fmt_string;
 
         }
 
@@ -162,7 +166,9 @@ public class FlowerColorAdapter extends RecyclerView.Adapter<FlowerColorAdapter.
 
             this.icon.setImageResource(icon_id);
             this.color.setText(colorCollection.color.name().toUpperCase());
-            this.variant_counts.setText(String.valueOf(colorCollection.flowers.size()));
+            this.genotypes_counts_view.setText(
+                    String.format(this.variants_fmt_string, colorCollection.flowers.size())
+            );
         }
     }
 
