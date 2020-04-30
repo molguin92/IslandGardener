@@ -8,13 +8,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SortedList;
 
 import org.molguin.acbreedinghelper.R;
+import org.molguin.acbreedinghelper.ui.species.FlowerSpeciesFragment;
 import org.molguin.flowers.FlowerConstants;
 import org.molguin.flowers.FlowerDatabase;
 import org.molguin.utils.Callback;
@@ -31,7 +31,7 @@ public class FlowerColorAdapter extends RecyclerView.Adapter<FlowerColorAdapter.
 
     public FlowerColorAdapter(final FlowerConstants.Species species,
                               FlowerDatabase db,
-                              Fragment parentFragment) {
+                              final FlowerSpeciesFragment parentFragment) {
         super();
         this.variants_fmt_string = parentFragment.getResources().getString(R.string.variants_fmt_string);
         this.colorCollections =
@@ -90,6 +90,7 @@ public class FlowerColorAdapter extends RecyclerView.Adapter<FlowerColorAdapter.
                     public void onChanged(Collection<FlowerColorCollection> flowerColorCollections) {
                         FlowerColorAdapter.this.colorCollections.addAll(flowerColorCollections);
                         collectionLiveData.removeObserver(this);
+                        parentFragment.notifyFinishedLoading();
                     }
                 });
 

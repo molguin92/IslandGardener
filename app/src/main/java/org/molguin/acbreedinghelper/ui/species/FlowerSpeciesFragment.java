@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,13 +35,16 @@ public class FlowerSpeciesFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.main_fragment, container, false);
+        return inflater.inflate(R.layout.list_fragment, container, false);
 
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         this.mViewModel = new ViewModelProvider(this.getActivity()).get(MainViewModel.class);
+        ProgressBar pbar = view.findViewById(R.id.progressbar);
+        pbar.setIndeterminate(true);
+        pbar.setVisibility(View.VISIBLE);
 
         Bundle args = getArguments();
         if (args != null) {
@@ -48,10 +52,20 @@ public class FlowerSpeciesFragment extends Fragment {
                     FlowerConstants.Species.values()[args.getInt(FlowerSpeciesFragment.ARG_SPECIES_ORDINAL)];
 
             RecyclerView rview = this.getView().findViewById(R.id.resultview);
+            rview.setVisibility(View.INVISIBLE);
             rview.setAdapter(new FlowerColorAdapter(species,
                     this.mViewModel.getFlowerDB(),
                     this));
             rview.setLayoutManager(new LinearLayoutManager(this.getContext()));
         }
+    }
+
+    public void notifyFinishedLoading() {
+        ProgressBar pbar = this.getView().findViewById(R.id.progressbar);
+        pbar.setIndeterminate(true);
+        pbar.setVisibility(View.INVISIBLE);
+        ((ViewGroup) this.getView()).removeView(pbar);
+        RecyclerView rview = this.getView().findViewById(R.id.resultview);
+        rview.setVisibility(View.VISIBLE);
     }
 }
