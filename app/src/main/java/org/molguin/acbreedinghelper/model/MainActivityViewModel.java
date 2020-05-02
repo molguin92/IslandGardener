@@ -8,18 +8,18 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import org.molguin.acbreedinghelper.flowers.FlowerDatabase;
+import org.molguin.acbreedinghelper.flowers.FlowerCollection;
 
 public class MainActivityViewModel extends ViewModel {
-    private final FlowerDatabase flowerDB;
+    private final FlowerCollection flowerCollection;
 
     public MainActivityViewModel(final AssetManager am, final Context appContext) {
         super();
-        this.flowerDB = new FlowerDatabase(am, appContext);
+        this.flowerCollection = new FlowerCollection(am, appContext);
     }
 
-    public FlowerDatabase getFlowerDB() {
-        return this.flowerDB;
+    public FlowerCollection getFlowerCollection() {
+        return this.flowerCollection;
     }
 
     public static class Factory implements ViewModelProvider.Factory {

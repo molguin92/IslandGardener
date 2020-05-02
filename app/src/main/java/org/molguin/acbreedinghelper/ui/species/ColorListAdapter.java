@@ -12,21 +12,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SortedList;
 
 import org.molguin.acbreedinghelper.R;
-import org.molguin.acbreedinghelper.flowers.FlowerConstants;
-import org.molguin.acbreedinghelper.flowers.FlowerDatabase;
 import org.molguin.acbreedinghelper.model.ColorListViewModel;
+import org.molguin.acbreedinghelper.model.FuzzyFlower;
 
 public class ColorListAdapter extends RecyclerView.Adapter<ColorListAdapter.FlowerColorCard> {
-    public final SortedList<ColorListViewModel.FlowerColorCollection> colorCollections;
+    public final SortedList<FuzzyFlower> fuzzyFlowerList;
 
     public ColorListAdapter() {
         super();
-        SortedList.Callback<ColorListViewModel.FlowerColorCollection> callback =
+        SortedList.Callback<FuzzyFlower> callback =
                 new ColorListViewModel.SortedListColorCollectionCallback(this);
 
-        this.colorCollections =
-                new SortedList<ColorListViewModel.FlowerColorCollection>(
-                        ColorListViewModel.FlowerColorCollection.class, callback);
+        this.fuzzyFlowerList =
+                new SortedList<FuzzyFlower>(FuzzyFlower.class, callback);
     }
 
     @NonNull
@@ -45,12 +43,12 @@ public class ColorListAdapter extends RecyclerView.Adapter<ColorListAdapter.Flow
 
     @Override
     public void onBindViewHolder(@NonNull FlowerColorCard holder, int position) {
-        holder.setColorCollection(this.colorCollections.get(position));
+        holder.setFuzzyFlower(this.fuzzyFlowerList.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return this.colorCollections.size();
+        return this.fuzzyFlowerList.size();
     }
 
     static class FlowerColorCard extends RecyclerView.ViewHolder {
@@ -68,18 +66,18 @@ public class ColorListAdapter extends RecyclerView.Adapter<ColorListAdapter.Flow
 
         }
 
-        void setColorCollection(final ColorListViewModel.FlowerColorCollection colorCollection) {
+        void setFuzzyFlower(final FuzzyFlower fuzzyFlower) {
             // set up the display
             int icon_id = icon.getContext()
                     .getResources()
-                    .getIdentifier(colorCollection.icon_name,
+                    .getIdentifier(fuzzyFlower.icon_name,
                             "drawable",
                             icon.getContext().getPackageName());
 
             this.icon.setImageResource(icon_id);
-            this.color.setText(colorCollection.color.name().toUpperCase());
+            this.color.setText(fuzzyFlower.color.name().toUpperCase());
             this.genotypes_counts_view.setText(
-                    String.format(this.variants_fmt_string, colorCollection.flowers.size())
+                    String.format(this.variants_fmt_string, fuzzyFlower.variants.size())
             );
 
             // add a listener to switch to a fragment with details

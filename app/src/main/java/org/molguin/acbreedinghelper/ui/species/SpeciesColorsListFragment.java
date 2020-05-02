@@ -16,10 +16,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.molguin.acbreedinghelper.R;
 import org.molguin.acbreedinghelper.flowers.FlowerConstants;
 import org.molguin.acbreedinghelper.model.ColorListViewModel;
+import org.molguin.acbreedinghelper.model.FuzzyFlower;
 import org.molguin.acbreedinghelper.model.MainActivityViewModel;
 import org.molguin.acbreedinghelper.utils.Callback;
 
-import java.util.Collection;
+import java.util.Set;
 
 public class SpeciesColorsListFragment extends Fragment {
     public static final String ARG_SPECIES_ORDINAL = "species";
@@ -60,18 +61,18 @@ public class SpeciesColorsListFragment extends Fragment {
             rview.setAdapter(adapter);
             rview.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
-            ColorListViewModel.Factory factory = new ColorListViewModel.Factory(mViewModel.getFlowerDB(), species);
+            ColorListViewModel.Factory factory = new ColorListViewModel.Factory(mViewModel.getFlowerCollection(), species);
             ColorListViewModel cViewModel = new ViewModelProvider(this, factory).get(ColorListViewModel.class);
 
-            cViewModel.loadData(new Callback<Collection<ColorListViewModel.FlowerColorCollection>, Void>() {
+            cViewModel.loadData(new Callback<Set<FuzzyFlower>, Void>() {
                 @Override
-                public Void apply(final Collection<ColorListViewModel.FlowerColorCollection> flowerColorCollections) {
+                public Void apply(final Set<FuzzyFlower> fuzzyFlowers) {
                     SpeciesColorsListFragment.this
                             .getActivity()
                             .runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    adapter.colorCollections.addAll(flowerColorCollections);
+                                    adapter.fuzzyFlowerList.addAll(fuzzyFlowers);
                                     SpeciesColorsListFragment.this.notifyFinishedLoading();
                                 }
                             });
