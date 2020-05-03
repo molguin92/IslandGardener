@@ -17,9 +17,7 @@ import org.molguin.acbreedinghelper.utils.Callback;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Condition;
@@ -29,18 +27,21 @@ import java.util.concurrent.locks.ReentrantLock;
 public class MatingViewModel extends ViewModel {
     final FlowerCollection flowerCollection;
     final FlowerConstants.Species species;
+    final ExecutorService exec;
 
     public MatingViewModel(final FlowerCollection flowerCollection,
                            final FlowerConstants.Species species) {
+        this.exec = Executors.newSingleThreadExecutor();
         this.flowerCollection = flowerCollection;
         this.species = species;
     }
 
     public void loadData(final Callback<Set<FuzzyFlower>, Void> callback) {
         // asynchronously load flowers
-        this.flowerCollection.applyToSpecies(this.species, new Callback<Set<Flower>, Void>() {
+        this.exec.submit(new Runnable() {
             @Override
-            public Void apply(Set<Flower> flowers) {
+            public void run() {
+                Set<Flower> flowers = flowerCollection.getAllFlowersForSpecies(species);
                 Multimap<FlowerConstants.Color, Flower> colors = HashMultimap.create();
 
                 for (Flower f : flowers)
@@ -53,7 +54,7 @@ public class MatingViewModel extends ViewModel {
                             e.getKey(), variants));
                 }
 
-                return callback.apply(fuzzyFlowers);
+                callback.apply(fuzzyFlowers);
             }
         });
     }
@@ -79,12 +80,11 @@ public class MatingViewModel extends ViewModel {
             this.exec.submit(new Runnable() {
                 @Override
                 public void run() {
-                    for(;;){
+                    for (; ; ) {
                         lock.lock();
                         try {
-                            while (!matesChanged && !(mate1 != null && mate2 != null) )
+                            while (!matesChanged && !(mate1 != null && mate2 != null))
                                 cond.await();
-
 
 
                         } catch (InterruptedException e) {

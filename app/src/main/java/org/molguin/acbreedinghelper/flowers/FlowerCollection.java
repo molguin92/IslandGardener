@@ -14,8 +14,8 @@ import com.google.common.collect.Multimaps;
 import com.google.common.collect.TreeMultimap;
 
 import org.molguin.acbreedinghelper.R;
-import org.molguin.acbreedinghelper.utils.Callback;
 
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.HashMap;
@@ -23,164 +23,70 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class FlowerCollection {
-    private final Lock dbLock;
-    private final Condition loadedCond;
     private final Map<FlowerConstants.Species, SpeciesCollection> speciesCollections;
-    private final ExecutorService execServ;
-    private boolean dataLoaded;
 
     public FlowerCollection(final AssetManager am,
-                            final Context appContext,
-                            final Callback<Void, Void> finishedLoadingCallback) {
-        this.dbLock = new ReentrantLock();
-        this.loadedCond = dbLock.newCondition();
-        this.dataLoaded = false;
-        this.execServ = Executors.newFixedThreadPool(FlowerConstants.Species.values().length / 2);
+                            final Context appContext) throws IOException {
 
         // on instantiation, read the JSON data and set up internal map of flowers
         this.speciesCollections = new ConcurrentHashMap<FlowerConstants.Species, SpeciesCollection>();
 
-        // load everything in the background
-        this.execServ.submit(new LoggingRunnable() {
-            @Override
-            public void execute() throws Exception {
-                Reader reader = new InputStreamReader(am.open(appContext.getString(R.string.flower_json)));
-                JsonObject flower_json = Json.parse(reader).asObject();
-                // JSON structure:
-                // { species:
-                //      variants: { id : { color: color, origin: origin}, ...}
-                //      matings: { idp1: {idp2: { child1: prob, child2: prob}, ...}}
-                // }
+        Reader reader = new InputStreamReader(am.open(appContext.getString(R.string.flower_json)));
+        JsonObject flower_json = Json.parse(reader).asObject();
+        // JSON structure:
+        // { species:
+        //      variants: { id : { color: color, origin: origin}, ...}
+        //      matings: { idp1: {idp2: { child1: prob, child2: prob}, ...}}
+        // }
 
 
-                for (JsonObject.Member species_data : flower_json) {
-                    FlowerConstants.Species species =
-                            FlowerConstants.Species.valueOf(species_data.getName());
+        for (JsonObject.Member species_data : flower_json) {
+            FlowerConstants.Species species =
+                    FlowerConstants.Species.valueOf(species_data.getName());
 
-                    Log.d("Data", "Loading flower data for " + species.namePlural());
+            Log.d("Data", "Loading flower data for " + species.namePlural());
 
-                    SpeciesCollection collection = new SpeciesCollection(species);
+            SpeciesCollection collection = new SpeciesCollection(species);
 
-                    JsonObject spec_obj = species_data.getValue().asObject();
-                    JsonObject variants = spec_obj.get("variants").asObject();
-                    JsonObject matings = spec_obj.get("matings").asObject();
+            JsonObject spec_obj = species_data.getValue().asObject();
+            JsonObject variants = spec_obj.get("variants").asObject();
+            JsonObject matings = spec_obj.get("matings").asObject();
 
-                    for (JsonObject.Member v : variants) {
-                        JsonObject values = v.getValue().asObject();
-                        int variant_id = Integer.parseInt(v.getName());
-                        FlowerConstants.Color color =
-                                FlowerConstants.Color.valueOf(values.get("color").asString());
-                        FlowerConstants.Origin origin =
-                                FlowerConstants.Origin.valueOf(values.get("origin").asString());
+            for (JsonObject.Member v : variants) {
+                JsonObject values = v.getValue().asObject();
+                int variant_id = Integer.parseInt(v.getName());
+                FlowerConstants.Color color =
+                        FlowerConstants.Color.valueOf(values.get("color").asString());
+                FlowerConstants.Origin origin =
+                        FlowerConstants.Origin.valueOf(values.get("origin").asString());
 
-                        collection.registerFlower(variant_id, color, origin);
-                    }
-
-                    for (JsonObject.Member mate1 : matings) {
-                        int parent1 = Integer.parseInt(mate1.getName());
-                        for (JsonObject.Member mate2 : mate1.getValue().asObject()) {
-                            int parent2 = Integer.parseInt(mate2.getName());
-                            Map<Integer, Double> offspring_probs = new HashMap<Integer, Double>();
-
-                            for (JsonObject.Member offspring : mate2.getValue().asObject()) {
-                                int offspring_id = Integer.parseInt(offspring.getName());
-                                double prob = offspring.getValue().asDouble();
-                                offspring_probs.put(offspring_id, prob);
-                            }
-
-                            collection.registerMating(parent1, parent2, offspring_probs);
-                        }
-                    }
-
-                    FlowerCollection.this.speciesCollections.put(species, collection);
-                }
-
-                Log.d("Data", "Finished loading.");
-                // finally, notify that we are loaded and ready to go
-                FlowerCollection.this.dbLock.lock();
-                try {
-                    FlowerCollection.this.dataLoaded = true;
-                    FlowerCollection.this.loadedCond.signalAll();
-                } finally {
-                    FlowerCollection.this.dbLock.unlock();
-                }
-
-                finishedLoadingCallback.apply(null);
+                collection.registerFlower(variant_id, color, origin);
             }
-        });
-    }
 
-    public void shutdown() throws InterruptedException {
-        this.waitUntilLoaded();
-        this.execServ.awaitTermination(1, TimeUnit.SECONDS);
-        this.execServ.shutdown();
-    }
+            for (JsonObject.Member mate1 : matings) {
+                int parent1 = Integer.parseInt(mate1.getName());
+                for (JsonObject.Member mate2 : mate1.getValue().asObject()) {
+                    int parent2 = Integer.parseInt(mate2.getName());
+                    Map<Integer, Double> offspring_probs = new HashMap<Integer, Double>();
 
-    private void waitUntilLoaded() throws InterruptedException {
-        this.dbLock.lock();
-        try {
-            while (!this.dataLoaded)
-                this.loadedCond.await();
-        } finally {
-            this.dbLock.unlock();
+                    for (JsonObject.Member offspring : mate2.getValue().asObject()) {
+                        int offspring_id = Integer.parseInt(offspring.getName());
+                        double prob = offspring.getValue().asDouble();
+                        offspring_probs.put(offspring_id, prob);
+                    }
+
+                    collection.registerMating(parent1, parent2, offspring_probs);
+                }
+            }
+
+            FlowerCollection.this.speciesCollections.put(species, collection);
         }
     }
 
-    public void applyToSpecies(final FlowerConstants.Species species,
-                               final Callback<Set<Flower>, Void> callback) {
-        this.execServ.submit(new CallbackRunnable() {
-            @Override
-            void execute() {
-                callback.apply(FlowerCollection.this.speciesCollections.get(species).getAllFlowers());
-            }
-        });
-    }
-
-    public void applyToColor(final FlowerConstants.Species species,
-                             final FlowerConstants.Color color,
-                             final Callback<Set<Flower>, Void> callback) {
-        this.execServ.submit(new CallbackRunnable() {
-            @Override
-            void execute() {
-                callback.apply(FlowerCollection.this.speciesCollections
-                        .get(species)
-                        .getFlowersForColor(color));
-            }
-        });
-    }
-
-    public void applyToOrigin(final FlowerConstants.Species species,
-                              final FlowerConstants.Origin origin,
-                              final Callback<Set<Flower>, Void> callback) {
-        this.execServ.submit(new CallbackRunnable() {
-            @Override
-            void execute() {
-                callback.apply(FlowerCollection.this.speciesCollections
-                        .get(species)
-                        .getFlowersForOrigin(origin));
-            }
-        });
-    }
-
-    public void applyToMating(final Flower parent1, final Flower parent2,
-                              final Callback<Map<Flower, Double>, Void> callback) {
-        if (parent1.species != parent2.species) throw new AssertionError();
-        this.execServ.submit(new CallbackRunnable() {
-            @Override
-            void execute() {
-                callback.apply(FlowerCollection.this.speciesCollections
-                        .get(parent1.species)
-                        .getOffspring(parent1, parent2));
-            }
-        });
+    public Set<Flower> getAllFlowersForSpecies(FlowerConstants.Species s) {
+        return this.speciesCollections.get(s).getAllFlowers();
     }
 
     private static class MatingKey implements Comparable<MatingKey> {
@@ -262,32 +168,6 @@ public class FlowerCollection {
         Map<Flower, Double> getOffspring(Flower parent1, Flower parent2) {
             Map<Flower, Double> offspring = this.matingMap.get(new MatingKey(parent1, parent2));
             return new HashMap<Flower, Double>(offspring);
-        }
-    }
-
-    static private abstract class LoggingRunnable implements Runnable {
-        @Override
-        public void run() {
-            try {
-                this.execute();
-            } catch (Exception e) {
-                Log.e("ERROR", e.toString());
-            }
-        }
-
-        abstract void execute() throws Exception;
-
-    }
-
-    private abstract class CallbackRunnable extends LoggingRunnable {
-        @Override
-        public void run() {
-            try {
-                FlowerCollection.this.waitUntilLoaded();
-                super.run();
-            } catch (InterruptedException e) {
-                Log.e("INTERRUPTED", e.toString());
-            }
         }
     }
 }
