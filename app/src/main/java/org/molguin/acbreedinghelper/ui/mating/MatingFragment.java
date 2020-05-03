@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
@@ -16,7 +17,6 @@ import org.molguin.acbreedinghelper.flowers.FlowerConstants;
 import org.molguin.acbreedinghelper.model.ColorListViewModel;
 import org.molguin.acbreedinghelper.model.FuzzyFlower;
 import org.molguin.acbreedinghelper.model.MainActivityViewModel;
-import org.molguin.acbreedinghelper.ui.species.SpeciesColorsListFragment;
 import org.molguin.acbreedinghelper.utils.Callback;
 
 import java.util.Set;
@@ -47,7 +47,7 @@ public class MatingFragment extends Fragment {
         if (args == null) return;
 
         final FlowerConstants.Species species =
-                FlowerConstants.Species.values()[args.getInt(SpeciesColorsListFragment.ARG_SPECIES_ORDINAL)];
+                FlowerConstants.Species.values()[args.getInt(MatingFragment.ARG_SPECIES_ORDINAL)];
 
         MainActivityViewModel mViewModel = new ViewModelProvider(this.getActivity()).get(MainActivityViewModel.class);
         ColorListViewModel.Factory factory = new ColorListViewModel.Factory(mViewModel.getFlowerCollection(), species);
@@ -55,6 +55,20 @@ public class MatingFragment extends Fragment {
 
         final Spinner p1spinner = view.findViewById(R.id.parent1_spinner);
         final Spinner p2spinner = view.findViewById(R.id.parent2_spinner);
+
+        // on item selected listeners
+
+        p1spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
 
         // load data at the end
         cViewModel.loadData(new Callback<Set<FuzzyFlower>, Void>() {

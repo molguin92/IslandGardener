@@ -9,13 +9,16 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import org.molguin.acbreedinghelper.flowers.FlowerCollection;
+import org.molguin.acbreedinghelper.utils.Callback;
 
 public class MainActivityViewModel extends ViewModel {
     private final FlowerCollection flowerCollection;
 
-    public MainActivityViewModel(final AssetManager am, final Context appContext) {
+    public MainActivityViewModel(final AssetManager am,
+                                 final Context appContext,
+                                 final Callback<Void, Void> finishedLoadingCallback) {
         super();
-        this.flowerCollection = new FlowerCollection(am, appContext);
+        this.flowerCollection = new FlowerCollection(am, appContext, finishedLoadingCallback);
     }
 
     public FlowerCollection getFlowerCollection() {
@@ -25,17 +28,19 @@ public class MainActivityViewModel extends ViewModel {
     public static class Factory implements ViewModelProvider.Factory {
         private final Context appContext;
         private final AssetManager am;
+        private final Callback<Void, Void> finishedLoadingCallback;
 
-        public Factory(Application app) {
+        public Factory(Application app, Callback<Void, Void> finishedLoadingCallback) {
             this.appContext = app.getApplicationContext();
             this.am = app.getResources().getAssets();
+            this.finishedLoadingCallback = finishedLoadingCallback;
         }
 
         @NonNull
         @Override
         public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
             if (modelClass.isAssignableFrom(MainActivityViewModel.class)) {
-                return (T) new MainActivityViewModel(this.am, this.appContext);
+                return (T) new MainActivityViewModel(this.am, this.appContext, this.finishedLoadingCallback);
             }
             throw new IllegalArgumentException("Unknown ViewModel class");
         }

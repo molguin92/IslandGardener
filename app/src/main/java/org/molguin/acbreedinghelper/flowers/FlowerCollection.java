@@ -37,7 +37,9 @@ public class FlowerCollection {
     private final ExecutorService execServ;
     private boolean dataLoaded;
 
-    public FlowerCollection(final AssetManager am, final Context appContext) {
+    public FlowerCollection(final AssetManager am,
+                            final Context appContext,
+                            final Callback<Void, Void> finishedLoadingCallback) {
         this.dbLock = new ReentrantLock();
         this.loadedCond = dbLock.newCondition();
         this.dataLoaded = false;
@@ -110,6 +112,8 @@ public class FlowerCollection {
                 } finally {
                     FlowerCollection.this.dbLock.unlock();
                 }
+
+                finishedLoadingCallback.apply(null);
             }
         });
     }
