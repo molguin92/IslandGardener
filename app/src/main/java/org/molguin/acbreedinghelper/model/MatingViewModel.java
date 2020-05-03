@@ -17,14 +17,21 @@ import org.molguin.acbreedinghelper.utils.Callback;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
-public class ColorListViewModel extends ViewModel {
+public class MatingViewModel extends ViewModel {
     final FlowerCollection flowerCollection;
     final FlowerConstants.Species species;
 
-    public ColorListViewModel(final FlowerCollection flowerCollection,
-                              final FlowerConstants.Species species) {
+    public MatingViewModel(final FlowerCollection flowerCollection,
+                           final FlowerConstants.Species species) {
         this.flowerCollection = flowerCollection;
         this.species = species;
     }
@@ -42,13 +49,55 @@ public class ColorListViewModel extends ViewModel {
                 Set<FuzzyFlower> fuzzyFlowers = new HashSet<FuzzyFlower>(colors.keySet().size());
                 for (Map.Entry<FlowerConstants.Color, Collection<Flower>> e : colors.asMap().entrySet()) {
                     Set<Flower> variants = new HashSet<Flower>(e.getValue());
-                    fuzzyFlowers.add(new FuzzyFlower(ColorListViewModel.this.species,
+                    fuzzyFlowers.add(new FuzzyFlower(MatingViewModel.this.species,
                             e.getKey(), variants));
                 }
 
                 return callback.apply(fuzzyFlowers);
             }
         });
+    }
+
+    private static class FuzzyFlowerMatingDispatcher {
+        private final ExecutorService exec;
+        private final Lock lock;
+        private final Condition cond;
+        private boolean matesChanged;
+
+        private FuzzyFlower mate1;
+        private FuzzyFlower mate2;
+
+        FuzzyFlowerMatingDispatcher() {
+            this.lock = new ReentrantLock();
+            this.cond = this.lock.newCondition();
+            this.matesChanged = false;
+
+            this.exec = Executors.newSingleThreadExecutor();
+            this.mate1 = null;
+            this.mate2 = null;
+
+            this.exec.submit(new Runnable() {
+                @Override
+                public void run() {
+                    for(;;){
+                        lock.lock();
+                        try {
+                            while (!matesChanged && !(mate1 != null && mate2 != null) )
+                                cond.await();
+
+
+
+                        } catch (InterruptedException e) {
+                            return;
+                        } finally {
+                            lock.unlock();
+                        }
+                    }
+                }
+            });
+        }
+
+
     }
 
 
@@ -66,8 +115,8 @@ public class ColorListViewModel extends ViewModel {
         @NonNull
         @Override
         public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-            if (modelClass.isAssignableFrom(ColorListViewModel.class)) {
-                return (T) new ColorListViewModel(this.db, this.species);
+            if (modelClass.isAssignableFrom(MatingViewModel.class)) {
+                return (T) new MatingViewModel(this.db, this.species);
             }
             throw new IllegalArgumentException("Unknown ViewModel class");
         }

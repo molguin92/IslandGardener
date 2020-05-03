@@ -3,6 +3,7 @@ package org.molguin.acbreedinghelper.model;
 import android.app.Application;
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
@@ -23,6 +24,17 @@ public class MainActivityViewModel extends ViewModel {
 
     public FlowerCollection getFlowerCollection() {
         return this.flowerCollection;
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        try {
+            this.flowerCollection.shutdown();
+        } catch (InterruptedException e) {
+            Log.w("MainActivityViewModel", "Error while shutting down flower collection");
+            Log.e("MainActivityViewModel", e.toString());
+        }
     }
 
     public static class Factory implements ViewModelProvider.Factory {
