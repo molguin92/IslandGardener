@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import org.molguin.acbreedinghelper.R;
 import org.molguin.acbreedinghelper.model.MainActivityViewModel;
-import org.molguin.acbreedinghelper.ui.species.SpeciesTabFragment;
 
 public class MainActivity extends AppCompatActivity {
 

@@ -1,4 +1,4 @@
-package org.molguin.acbreedinghelper.ui.species;
+package org.molguin.acbreedinghelper.ui;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,6 +16,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 import org.molguin.acbreedinghelper.R;
 import org.molguin.acbreedinghelper.flowers.FlowerConstants;
+import org.molguin.acbreedinghelper.ui.mating.MatingFragment;
 
 public class SpeciesTabFragment extends Fragment {
     FlowerFragmentAdapter flowerFragmentAdapter;
@@ -57,9 +58,10 @@ public class SpeciesTabFragment extends Fragment {
         @NonNull
         @Override
         public Fragment createFragment(int position) {
-            Fragment fragment = SpeciesColorsListFragment.newInstance();
+//            Fragment fragment = SpeciesColorsListFragment.newInstance();
+            Fragment fragment = MatingFragment.newInstance();
             Bundle args = new Bundle();
-            args.putInt(SpeciesColorsListFragment.ARG_SPECIES_ORDINAL,
+            args.putInt(MatingFragment.ARG_SPECIES_ORDINAL,
                     position % FlowerConstants.Species.values().length);
             fragment.setArguments(args);
             return fragment;
