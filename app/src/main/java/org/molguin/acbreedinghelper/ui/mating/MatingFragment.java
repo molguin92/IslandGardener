@@ -25,6 +25,8 @@ import org.molguin.acbreedinghelper.utils.Callback;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -72,11 +74,30 @@ public class MatingFragment extends Fragment {
         cViewModel.dispatcher.setCallback(new Callback<Map<Flower, Double>, Void>() {
             @Override
             public Void apply(final Map<Flower, Double> flowerDoubleMap) {
-                final List<Map.Entry<Flower, Double>> entries = new ArrayList<Map.Entry<Flower, Double>>(flowerDoubleMap.entrySet());
+                // TODO: put callback in viewmodel?
+                Map<FuzzyFlower, Double> fuzzyFlowersProbs = new HashMap<FuzzyFlower, Double>();
+                Map<FlowerConstants.Color, FuzzyFlower> colorFFlowers = new HashMap<FlowerConstants.Color, FuzzyFlower>();
+                for (Map.Entry<Flower, Double> e : flowerDoubleMap.entrySet()) {
+                    FlowerConstants.Color color = e.getKey().color;
+                    FuzzyFlower f = colorFFlowers.get(color);
+                    if (f == null)
+                        f = new FuzzyFlower(species, color, new HashSet<Flower>());
+                    Double probs = fuzzyFlowersProbs.get(f);
+                    if (probs == null)
+                        probs = 0.0;
+
+                    f.variants.add(e.getKey());
+                    fuzzyFlowersProbs.put(f, e.getValue() + probs);
+                    colorFFlowers.put(color, f);
+                }
+
+                final List<Map.Entry<FuzzyFlower, Double>> entries =
+                        new ArrayList<Map.Entry<FuzzyFlower, Double>>(fuzzyFlowersProbs.entrySet());
+
                 // sort the entries before handing them over
-                Collections.sort(entries, new Comparator<Map.Entry<Flower, Double>>() {
+                Collections.sort(entries, new Comparator<Map.Entry<FuzzyFlower, Double>>() {
                     @Override
-                    public int compare(Map.Entry<Flower, Double> o1, Map.Entry<Flower, Double> o2) {
+                    public int compare(Map.Entry<FuzzyFlower, Double> o1, Map.Entry<FuzzyFlower, Double> o2) {
                         return Double.compare(o2.getValue(), o1.getValue()); // NOTE: REVERSE ORDER!
                     }
                 });

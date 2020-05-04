@@ -11,9 +11,9 @@ public class FuzzyFlower implements Comparable<FuzzyFlower> {
     public final FlowerConstants.Color color;
     public final Set<Flower> variants;
 
-    FuzzyFlower(FlowerConstants.Species species,
-                FlowerConstants.Color color,
-                Set<Flower> variants) {
+    public FuzzyFlower(FlowerConstants.Species species,
+                       FlowerConstants.Color color,
+                       Set<Flower> variants) {
         this.species = species;
         this.color = color;
         this.variants = variants;

@@ -12,11 +12,11 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.molguin.acbreedinghelper.R;
-import org.molguin.acbreedinghelper.flowers.Flower;
+import org.molguin.acbreedinghelper.model.FuzzyFlower;
 
 import java.util.Map;
 
-public class VariantPercentageListAdapter extends ListAdapter<Map.Entry<Flower, Double>, VariantPercentageListAdapter.ViewHolder> {
+public class VariantPercentageListAdapter extends ListAdapter<Map.Entry<FuzzyFlower, Double>, VariantPercentageListAdapter.ViewHolder> {
 
     VariantPercentageListAdapter() {
         super(new VariantPercentageListAdapter.DiffCallback());
@@ -32,7 +32,7 @@ public class VariantPercentageListAdapter extends ListAdapter<Map.Entry<Flower, 
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Map.Entry<Flower, Double> item = getItem(position);
+        Map.Entry<FuzzyFlower, Double> item = getItem(position);
         holder.setFlower(item.getKey(), item.getValue());
     }
 
@@ -50,7 +50,7 @@ public class VariantPercentageListAdapter extends ListAdapter<Map.Entry<Flower, 
             this.iconView = v.findViewById(R.id.flower_icon);
         }
 
-        void setFlower(Flower f, double percentage) {
+        void setFlower(FuzzyFlower f, double probability) {
             // set icon
             int icon_id = iconView.getContext()
                     .getResources()
@@ -63,21 +63,22 @@ public class VariantPercentageListAdapter extends ListAdapter<Map.Entry<Flower, 
             iconView.setImageResource(icon_id);
 
             colorView.setText(f.color.name().toUpperCase());
-            variantIdView.setText(f.human_readable_genotype);
-            percentView.setText(String.format("%.4f%%", percentage));
+//            variantIdView.setText(f.human_readable_genotype);
+            percentView.setText(String.format("%.2f%%", probability * 100)); // convert to percent
         }
     }
 
-    private static class DiffCallback extends DiffUtil.ItemCallback<Map.Entry<Flower, Double>> {
+    private static class DiffCallback extends DiffUtil.ItemCallback<Map.Entry<FuzzyFlower, Double>> {
 
         @Override
-        public boolean areItemsTheSame(@NonNull Map.Entry<Flower, Double> oldItem,
-                                       @NonNull Map.Entry<Flower, Double> newItem) {
+        public boolean areItemsTheSame(@NonNull Map.Entry<FuzzyFlower, Double> oldItem,
+                                       @NonNull Map.Entry<FuzzyFlower, Double> newItem) {
             return oldItem.getKey().hashCode() == newItem.getKey().hashCode();
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull Map.Entry<Flower, Double> oldItem, @NonNull Map.Entry<Flower, Double> newItem) {
+        public boolean areContentsTheSame(@NonNull Map.Entry<FuzzyFlower, Double> oldItem,
+                                          @NonNull Map.Entry<FuzzyFlower, Double> newItem) {
             return areItemsTheSame(oldItem, newItem) && (oldItem.getValue().equals(newItem.getValue()));
         }
     }
