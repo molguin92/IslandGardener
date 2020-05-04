@@ -6,20 +6,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.molguin.acbreedinghelper.R;
+import org.molguin.acbreedinghelper.flowers.Flower;
 import org.molguin.acbreedinghelper.flowers.FlowerConstants;
-import org.molguin.acbreedinghelper.model.MatingViewModel;
 import org.molguin.acbreedinghelper.model.FuzzyFlower;
 import org.molguin.acbreedinghelper.model.MainActivityViewModel;
+import org.molguin.acbreedinghelper.model.MatingViewModel;
 import org.molguin.acbreedinghelper.utils.Callback;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class MatingFragment extends Fragment {
@@ -56,21 +63,33 @@ public class MatingFragment extends Fragment {
 
         final Spinner p1spinner = view.findViewById(R.id.parent1_spinner);
         final Spinner p2spinner = view.findViewById(R.id.parent2_spinner);
+        final RecyclerView resultview = view.findViewById(R.id.result_recycler_view);
 
+        final VariantPercentageListAdapter recyclerViewAdapter = new VariantPercentageListAdapter();
+        resultview.setAdapter(recyclerViewAdapter);
+        resultview.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // on item selected listeners
-        p1spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        cViewModel.dispatcher.setCallback(new Callback<Map<Flower, Double>, Void>() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            public Void apply(final Map<Flower, Double> flowerDoubleMap) {
+                final List<Map.Entry<Flower, Double>> entries = new ArrayList<Map.Entry<Flower, Double>>(flowerDoubleMap.entrySet());
+                // sort the entries before handing them over
+                Collections.sort(entries, new Comparator<Map.Entry<Flower, Double>>() {
+                    @Override
+                    public int compare(Map.Entry<Flower, Double> o1, Map.Entry<Flower, Double> o2) {
+                        return Double.compare(o2.getValue(), o1.getValue()); // NOTE: REVERSE ORDER!
+                    }
+                });
 
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
+                requireActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        recyclerViewAdapter.submitList(entries);
+                    }
+                });
+                return null;
             }
         });
-
 
         // load data at the end
         cViewModel.loadData(new Callback<Set<FuzzyFlower>, Void>() {
@@ -81,8 +100,36 @@ public class MatingFragment extends Fragment {
                         .runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                p1spinner.setAdapter(new MatingSpinnerAdapter(fuzzyFlowers));
-                                p2spinner.setAdapter(new MatingSpinnerAdapter(fuzzyFlowers));
+                                final MatingSpinnerAdapter adapter1 = new MatingSpinnerAdapter(fuzzyFlowers);
+                                final MatingSpinnerAdapter adapter2 = new MatingSpinnerAdapter(fuzzyFlowers);
+                                p1spinner.setAdapter(adapter1);
+                                p2spinner.setAdapter(adapter2);
+
+                                // on item selected listeners
+                                p1spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                    @Override
+                                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                        cViewModel.dispatcher.setMate1(adapter1.getItem(position));
+                                    }
+
+                                    @Override
+                                    public void onNothingSelected(AdapterView<?> parent) {
+
+                                    }
+                                });
+
+                                // on item selected listeners
+                                p2spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                    @Override
+                                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                        cViewModel.dispatcher.setMate2(adapter2.getItem(position));
+                                    }
+
+                                    @Override
+                                    public void onNothingSelected(AdapterView<?> parent) {
+
+                                    }
+                                });
                             }
                         });
                 return null;

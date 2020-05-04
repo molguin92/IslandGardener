@@ -11,7 +11,7 @@
     <ImageView
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/flower_color"
-        app:layout_constraintBottom_toBottomOf="@id/variants_heading"
+        app:layout_constraintBottom_toBottomOf="@id/flower_variant_id"
         android:id="@+id/flower_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -19,7 +19,7 @@
         android:adjustViewBounds="true"
         android:cropToPadding="false"
         android:gravity="center_vertical"
-        android:maxHeight="45dp"
+        android:maxHeight="55dp"
         app:srcCompat="@drawable/cosmo_black" />
 
     <!--    <TextView-->
@@ -34,7 +34,7 @@
     <TextView
         app:layout_constraintStart_toEndOf="@id/flower_icon"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/variants_heading"
+        app:layout_constraintBottom_toTopOf="@id/flower_variant_id"
         android:id="@+id/flower_color"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -42,7 +42,7 @@
         android:layout_marginStart="15dp"
         android:layout_marginEnd="15dp"
         android:text="@string/placeholder"
-        android:textSize="20sp"
+        android:textSize="24sp"
         android:textStyle="bold" />
 
 
@@ -50,12 +50,23 @@
         app:layout_constraintTop_toBottomOf="@id/flower_color"
         app:layout_constraintStart_toStartOf="@id/flower_color"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:id="@+id/variants_heading"
+        android:id="@+id/flower_variant_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:text="@string/variants_fmt_string"
+        android:text="@string/placeholder"
         android:textSize="18sp"
         android:textStyle="italic" />
+
+    <TextView
+        android:id="@+id/variant_percent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/placeholder_percent"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/flower_color"
+
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

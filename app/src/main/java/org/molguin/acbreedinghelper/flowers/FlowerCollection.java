@@ -7,10 +7,13 @@ import android.util.Log;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
+import com.google.common.collect.Table;
+import com.google.common.collect.Tables;
 import com.google.common.collect.TreeMultimap;
 
 import org.molguin.acbreedinghelper.R;
@@ -89,29 +92,9 @@ public class FlowerCollection {
         return this.speciesCollections.get(s).getAllFlowers();
     }
 
-    private static class MatingKey implements Comparable<MatingKey> {
-        Flower parent1;
-        Flower parent2;
-
-        MatingKey(Flower parent1_id, Flower parent2_id) {
-            if (parent1_id.compareTo(parent2_id) >= 0) {
-                this.parent1 = parent1_id;
-                this.parent2 = parent2_id;
-            } else {
-                this.parent1 = parent2_id;
-                this.parent2 = parent1_id;
-            }
-        }
-
-        @Override
-        public int compareTo(MatingKey other) {
-            return Integer.compare(this.hashCode(), other.hashCode());
-        }
-
-        @Override
-        public int hashCode() {
-            return (this.parent1.hashCode() * 10000) + this.parent2.hashCode();
-        }
+    public Map<Flower, Double> getAllOffspring(Flower parent1, Flower parent2) {
+        if (parent1.species != parent2.species) throw new AssertionError();
+        return this.speciesCollections.get(parent1.species).getOffspring(parent1, parent2);
     }
 
     private static class SpeciesCollection {
@@ -119,7 +102,7 @@ public class FlowerCollection {
         private final Multimap<FlowerConstants.Color, Flower> colorFlowerMap;
         private final Multimap<FlowerConstants.Origin, Flower> originFlowerMap;
         private final BiMap<Integer, Flower> idFlowerBiMap;
-        private final Map<MatingKey, Map<Flower, Double>> matingMap;
+        private final Table<Flower, Flower, Map<Flower, Double>> matings;
 
         SpeciesCollection(FlowerConstants.Species species) {
             this.species = species;
@@ -130,8 +113,7 @@ public class FlowerCollection {
                     Multimaps.synchronizedSortedSetMultimap(
                             TreeMultimap.<FlowerConstants.Origin, Flower>create());
 
-
-            this.matingMap = new ConcurrentHashMap<MatingKey, Map<Flower, Double>>();
+            this.matings = Tables.synchronizedTable(HashBasedTable.<Flower, Flower, Map<Flower, Double>>create());
             this.idFlowerBiMap = Maps.synchronizedBiMap(HashBiMap.<Integer, Flower>create());
         }
 
@@ -147,10 +129,11 @@ public class FlowerCollection {
             for (Map.Entry<Integer, Double> e : offspringProbMap.entrySet())
                 offspringMap.put(this.idFlowerBiMap.get(e.getKey()), e.getValue());
 
-            this.matingMap.put(
-                    new MatingKey(
-                            this.idFlowerBiMap.get(parent1),
-                            this.idFlowerBiMap.get(parent2)), offspringMap);
+            Flower flower1 = this.idFlowerBiMap.get(parent1);
+            Flower flower2 = this.idFlowerBiMap.get(parent2);
+
+            this.matings.put(flower1, flower2, offspringMap);
+            this.matings.put(flower2, flower1, offspringMap);
         }
 
         Set<Flower> getAllFlowers() {
@@ -166,7 +149,7 @@ public class FlowerCollection {
         }
 
         Map<Flower, Double> getOffspring(Flower parent1, Flower parent2) {
-            Map<Flower, Double> offspring = this.matingMap.get(new MatingKey(parent1, parent2));
+            Map<Flower, Double> offspring = this.matings.get(parent1, parent2);
             return new HashMap<Flower, Double>(offspring);
         }
     }
