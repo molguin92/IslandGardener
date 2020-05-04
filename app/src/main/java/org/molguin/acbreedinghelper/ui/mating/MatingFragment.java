@@ -85,6 +85,7 @@ public class MatingFragment extends Fragment {
                     @Override
                     public void run() {
                         recyclerViewAdapter.submitList(entries);
+                        resultview.smoothScrollToPosition(0);
                     }
                 });
                 return null;
