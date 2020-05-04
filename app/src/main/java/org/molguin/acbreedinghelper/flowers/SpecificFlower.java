@@ -1,26 +1,24 @@
 package org.molguin.acbreedinghelper.flowers;
 
-public class Flower implements Comparable<Flower> {
+import java.util.HashSet;
+import java.util.Set;
+
+public class SpecificFlower extends AbstractFuzzyFlower {
     private final static String[] SYMBOLS = new String[]{"r", "y", "w", "s"};
-    public final FlowerConstants.Species species;
-    public final FlowerConstants.Color color;
     public final FlowerConstants.Origin origin;
     public final String human_readable_genotype;
     final int genotype_id;
 
 
-    Flower(FlowerConstants.Species species,
-           FlowerConstants.Color color,
-           FlowerConstants.Origin origin,
-           int genotype_id) {
-        this.species = species;
-        this.color = color;
+    SpecificFlower(FlowerConstants.Species species,
+                   FlowerConstants.Color color,
+                   FlowerConstants.Origin origin,
+                   int genotype_id) {
+        super(species, color);
         this.origin = origin;
         this.genotype_id = genotype_id;
         this.human_readable_genotype = genotypeIDToSymbolic(genotype_id);
     }
-
-    ;
 
     private static String genotypeIDToSymbolic(int genotype_id) {
         StringBuilder sb = new StringBuilder(8);
@@ -53,17 +51,14 @@ public class Flower implements Comparable<Flower> {
     }
 
     @Override
-    public int compareTo(Flower other) {
-        return Integer.compare(this.hashCode(), other.hashCode());
-    }
-
-    @Override
     public int hashCode() {
         return (this.species.ordinal() * 10000) + this.genotype_id;
     }
 
     @Override
-    public String toString() {
-        return String.format("%s_%s_%d", this.species.name(), this.color.name(), this.genotype_id);
+    public Set<SpecificFlower> getVariants() {
+        Set<SpecificFlower> set = new HashSet<SpecificFlower>();
+        set.add(this);
+        return set;
     }
 }

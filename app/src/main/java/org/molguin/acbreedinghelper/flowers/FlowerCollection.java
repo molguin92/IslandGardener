@@ -88,69 +88,69 @@ public class FlowerCollection {
         }
     }
 
-    public Set<Flower> getAllFlowersForSpecies(FlowerConstants.Species s) {
+    public Set<SpecificFlower> getAllFlowersForSpecies(FlowerConstants.Species s) {
         return this.speciesCollections.get(s).getAllFlowers();
     }
 
-    public Map<Flower, Double> getAllOffspring(Flower parent1, Flower parent2) {
+    public Map<SpecificFlower, Double> getAllOffspring(SpecificFlower parent1, SpecificFlower parent2) {
         if (parent1.species != parent2.species) throw new AssertionError();
         return this.speciesCollections.get(parent1.species).getOffspring(parent1, parent2);
     }
 
     private static class SpeciesCollection {
         private final FlowerConstants.Species species;
-        private final Multimap<FlowerConstants.Color, Flower> colorFlowerMap;
-        private final Multimap<FlowerConstants.Origin, Flower> originFlowerMap;
-        private final BiMap<Integer, Flower> idFlowerBiMap;
-        private final Table<Flower, Flower, Map<Flower, Double>> matings;
+        private final Multimap<FlowerConstants.Color, SpecificFlower> colorFlowerMap;
+        private final Multimap<FlowerConstants.Origin, SpecificFlower> originFlowerMap;
+        private final BiMap<Integer, SpecificFlower> idFlowerBiMap;
+        private final Table<SpecificFlower, SpecificFlower, Map<SpecificFlower, Double>> matings;
 
         SpeciesCollection(FlowerConstants.Species species) {
             this.species = species;
             this.colorFlowerMap =
                     Multimaps.synchronizedSortedSetMultimap(
-                            TreeMultimap.<FlowerConstants.Color, Flower>create());
+                            TreeMultimap.<FlowerConstants.Color, SpecificFlower>create());
             this.originFlowerMap =
                     Multimaps.synchronizedSortedSetMultimap(
-                            TreeMultimap.<FlowerConstants.Origin, Flower>create());
+                            TreeMultimap.<FlowerConstants.Origin, SpecificFlower>create());
 
-            this.matings = Tables.synchronizedTable(HashBasedTable.<Flower, Flower, Map<Flower, Double>>create());
-            this.idFlowerBiMap = Maps.synchronizedBiMap(HashBiMap.<Integer, Flower>create());
+            this.matings = Tables.synchronizedTable(HashBasedTable.<SpecificFlower, SpecificFlower, Map<SpecificFlower, Double>>create());
+            this.idFlowerBiMap = Maps.synchronizedBiMap(HashBiMap.<Integer, SpecificFlower>create());
         }
 
         void registerFlower(int id, FlowerConstants.Color color, FlowerConstants.Origin origin) {
-            Flower flower = new Flower(this.species, color, origin, id);
-            this.colorFlowerMap.put(color, flower);
-            this.originFlowerMap.put(origin, flower);
-            this.idFlowerBiMap.put(id, flower);
+            SpecificFlower specificFlower = new SpecificFlower(this.species, color, origin, id);
+            this.colorFlowerMap.put(color, specificFlower);
+            this.originFlowerMap.put(origin, specificFlower);
+            this.idFlowerBiMap.put(id, specificFlower);
         }
 
         void registerMating(int parent1, int parent2, Map<Integer, Double> offspringProbMap) {
-            Map<Flower, Double> offspringMap = new ConcurrentHashMap<Flower, Double>();
+            Map<SpecificFlower, Double> offspringMap = new ConcurrentHashMap<SpecificFlower, Double>();
             for (Map.Entry<Integer, Double> e : offspringProbMap.entrySet())
                 offspringMap.put(this.idFlowerBiMap.get(e.getKey()), e.getValue());
 
-            Flower flower1 = this.idFlowerBiMap.get(parent1);
-            Flower flower2 = this.idFlowerBiMap.get(parent2);
+            SpecificFlower specificFlower1 = this.idFlowerBiMap.get(parent1);
+            SpecificFlower specificFlower2 = this.idFlowerBiMap.get(parent2);
 
-            this.matings.put(flower1, flower2, offspringMap);
-            this.matings.put(flower2, flower1, offspringMap);
+            this.matings.put(specificFlower1, specificFlower2, offspringMap);
+            this.matings.put(specificFlower2, specificFlower1, offspringMap);
         }
 
-        Set<Flower> getAllFlowers() {
+        Set<SpecificFlower> getAllFlowers() {
             return this.idFlowerBiMap.values();
         }
 
-        Set<Flower> getFlowersForColor(FlowerConstants.Color color) {
-            return new HashSet<Flower>(this.colorFlowerMap.get(color));
+        Set<SpecificFlower> getFlowersForColor(FlowerConstants.Color color) {
+            return new HashSet<SpecificFlower>(this.colorFlowerMap.get(color));
         }
 
-        Set<Flower> getFlowersForOrigin(FlowerConstants.Origin origin) {
-            return new HashSet<Flower>(this.originFlowerMap.get(origin));
+        Set<SpecificFlower> getFlowersForOrigin(FlowerConstants.Origin origin) {
+            return new HashSet<SpecificFlower>(this.originFlowerMap.get(origin));
         }
 
-        Map<Flower, Double> getOffspring(Flower parent1, Flower parent2) {
-            Map<Flower, Double> offspring = this.matings.get(parent1, parent2);
-            return new HashMap<Flower, Double>(offspring);
+        Map<SpecificFlower, Double> getOffspring(SpecificFlower parent1, SpecificFlower parent2) {
+            Map<SpecificFlower, Double> offspring = this.matings.get(parent1, parent2);
+            return new HashMap<SpecificFlower, Double>(offspring);
         }
     }
 }

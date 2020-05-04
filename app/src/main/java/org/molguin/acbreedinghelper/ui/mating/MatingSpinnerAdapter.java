@@ -8,7 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.molguin.acbreedinghelper.R;
-import org.molguin.acbreedinghelper.model.FuzzyFlower;
+import org.molguin.acbreedinghelper.flowers.FlowerColorGroup;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,10 +16,10 @@ import java.util.Collections;
 import java.util.List;
 
 public class MatingSpinnerAdapter extends BaseAdapter {
-    final List<FuzzyFlower> flowers;
+    final List<FlowerColorGroup> flowers;
 
-    MatingSpinnerAdapter(Collection<FuzzyFlower> flowers) {
-        this.flowers = new ArrayList<FuzzyFlower>(flowers);
+    MatingSpinnerAdapter(Collection<FlowerColorGroup> flowers) {
+        this.flowers = new ArrayList<FlowerColorGroup>(flowers);
         Collections.sort(this.flowers);
     }
 
@@ -30,7 +30,7 @@ public class MatingSpinnerAdapter extends BaseAdapter {
     }
 
     @Override
-    public FuzzyFlower getItem(int position) {
+    public FlowerColorGroup getItem(int position) {
         return this.flowers.get(position);
     }
 
@@ -46,7 +46,7 @@ public class MatingSpinnerAdapter extends BaseAdapter {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.color_holder, null);
 
-        FuzzyFlower f = this.flowers.get(position);
+        FlowerColorGroup f = this.flowers.get(position);
 
         TextView colorview = view.findViewById(R.id.flower_color);
         ImageView iconView = view.findViewById(R.id.flower_icon);

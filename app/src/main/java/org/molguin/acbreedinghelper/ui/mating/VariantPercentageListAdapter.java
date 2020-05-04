@@ -12,11 +12,11 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.molguin.acbreedinghelper.R;
-import org.molguin.acbreedinghelper.model.FuzzyFlower;
+import org.molguin.acbreedinghelper.flowers.FlowerColorGroup;
 
 import java.util.Map;
 
-public class VariantPercentageListAdapter extends ListAdapter<Map.Entry<FuzzyFlower, Double>, VariantPercentageListAdapter.ViewHolder> {
+public class VariantPercentageListAdapter extends ListAdapter<Map.Entry<FlowerColorGroup, Double>, VariantPercentageListAdapter.ViewHolder> {
 
     VariantPercentageListAdapter() {
         super(new VariantPercentageListAdapter.DiffCallback());
@@ -32,7 +32,7 @@ public class VariantPercentageListAdapter extends ListAdapter<Map.Entry<FuzzyFlo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Map.Entry<FuzzyFlower, Double> item = getItem(position);
+        Map.Entry<FlowerColorGroup, Double> item = getItem(position);
         holder.setFlower(item.getKey(), item.getValue());
     }
 
@@ -50,7 +50,7 @@ public class VariantPercentageListAdapter extends ListAdapter<Map.Entry<FuzzyFlo
             this.iconView = v.findViewById(R.id.flower_icon);
         }
 
-        void setFlower(FuzzyFlower f, double probability) {
+        void setFlower(FlowerColorGroup f, double probability) {
             // set icon
             int icon_id = iconView.getContext()
                     .getResources()
@@ -68,17 +68,17 @@ public class VariantPercentageListAdapter extends ListAdapter<Map.Entry<FuzzyFlo
         }
     }
 
-    private static class DiffCallback extends DiffUtil.ItemCallback<Map.Entry<FuzzyFlower, Double>> {
+    private static class DiffCallback extends DiffUtil.ItemCallback<Map.Entry<FlowerColorGroup, Double>> {
 
         @Override
-        public boolean areItemsTheSame(@NonNull Map.Entry<FuzzyFlower, Double> oldItem,
-                                       @NonNull Map.Entry<FuzzyFlower, Double> newItem) {
+        public boolean areItemsTheSame(@NonNull Map.Entry<FlowerColorGroup, Double> oldItem,
+                                       @NonNull Map.Entry<FlowerColorGroup, Double> newItem) {
             return oldItem.getKey().hashCode() == newItem.getKey().hashCode();
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull Map.Entry<FuzzyFlower, Double> oldItem,
-                                          @NonNull Map.Entry<FuzzyFlower, Double> newItem) {
+        public boolean areContentsTheSame(@NonNull Map.Entry<FlowerColorGroup, Double> oldItem,
+                                          @NonNull Map.Entry<FlowerColorGroup, Double> newItem) {
             return areItemsTheSame(oldItem, newItem) && (oldItem.getValue().equals(newItem.getValue()));
         }
     }

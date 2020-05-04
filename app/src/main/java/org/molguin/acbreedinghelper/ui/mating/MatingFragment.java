@@ -15,9 +15,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.molguin.acbreedinghelper.R;
-import org.molguin.acbreedinghelper.flowers.Flower;
+import org.molguin.acbreedinghelper.flowers.SpecificFlower;
 import org.molguin.acbreedinghelper.flowers.FlowerConstants;
-import org.molguin.acbreedinghelper.model.FuzzyFlower;
+import org.molguin.acbreedinghelper.flowers.FlowerColorGroup;
 import org.molguin.acbreedinghelper.model.MainActivityViewModel;
 import org.molguin.acbreedinghelper.model.MatingViewModel;
 import org.molguin.acbreedinghelper.utils.Callback;
@@ -71,17 +71,17 @@ public class MatingFragment extends Fragment {
         resultview.setAdapter(recyclerViewAdapter);
         resultview.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        cViewModel.dispatcher.setCallback(new Callback<Map<Flower, Double>, Void>() {
+        cViewModel.dispatcher.setCallback(new Callback<Map<SpecificFlower, Double>, Void>() {
             @Override
-            public Void apply(final Map<Flower, Double> flowerDoubleMap) {
+            public Void apply(final Map<SpecificFlower, Double> flowerDoubleMap) {
                 // TODO: put callback in viewmodel?
-                Map<FuzzyFlower, Double> fuzzyFlowersProbs = new HashMap<FuzzyFlower, Double>();
-                Map<FlowerConstants.Color, FuzzyFlower> colorFFlowers = new HashMap<FlowerConstants.Color, FuzzyFlower>();
-                for (Map.Entry<Flower, Double> e : flowerDoubleMap.entrySet()) {
+                Map<FlowerColorGroup, Double> fuzzyFlowersProbs = new HashMap<FlowerColorGroup, Double>();
+                Map<FlowerConstants.Color, FlowerColorGroup> colorFFlowers = new HashMap<FlowerConstants.Color, FlowerColorGroup>();
+                for (Map.Entry<SpecificFlower, Double> e : flowerDoubleMap.entrySet()) {
                     FlowerConstants.Color color = e.getKey().color;
-                    FuzzyFlower f = colorFFlowers.get(color);
+                    FlowerColorGroup f = colorFFlowers.get(color);
                     if (f == null)
-                        f = new FuzzyFlower(species, color, new HashSet<Flower>());
+                        f = new FlowerColorGroup(species, color, new HashSet<SpecificFlower>());
                     Double probs = fuzzyFlowersProbs.get(f);
                     if (probs == null)
                         probs = 0.0;
@@ -91,13 +91,13 @@ public class MatingFragment extends Fragment {
                     colorFFlowers.put(color, f);
                 }
 
-                final List<Map.Entry<FuzzyFlower, Double>> entries =
-                        new ArrayList<Map.Entry<FuzzyFlower, Double>>(fuzzyFlowersProbs.entrySet());
+                final List<Map.Entry<FlowerColorGroup, Double>> entries =
+                        new ArrayList<Map.Entry<FlowerColorGroup, Double>>(fuzzyFlowersProbs.entrySet());
 
                 // sort the entries before handing them over
-                Collections.sort(entries, new Comparator<Map.Entry<FuzzyFlower, Double>>() {
+                Collections.sort(entries, new Comparator<Map.Entry<FlowerColorGroup, Double>>() {
                     @Override
-                    public int compare(Map.Entry<FuzzyFlower, Double> o1, Map.Entry<FuzzyFlower, Double> o2) {
+                    public int compare(Map.Entry<FlowerColorGroup, Double> o1, Map.Entry<FlowerColorGroup, Double> o2) {
                         return Double.compare(o2.getValue(), o1.getValue()); // NOTE: REVERSE ORDER!
                     }
                 });
@@ -114,16 +114,16 @@ public class MatingFragment extends Fragment {
         });
 
         // load data at the end
-        cViewModel.loadData(new Callback<Set<FuzzyFlower>, Void>() {
+        cViewModel.loadData(new Callback<Set<FlowerColorGroup>, Void>() {
             @Override
-            public Void apply(final Set<FuzzyFlower> fuzzyFlowers) {
+            public Void apply(final Set<FlowerColorGroup> flowerColorGroups) {
                 MatingFragment.this
                         .getActivity()
                         .runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                final MatingSpinnerAdapter adapter1 = new MatingSpinnerAdapter(fuzzyFlowers);
-                                final MatingSpinnerAdapter adapter2 = new MatingSpinnerAdapter(fuzzyFlowers);
+                                final MatingSpinnerAdapter adapter1 = new MatingSpinnerAdapter(flowerColorGroups);
+                                final MatingSpinnerAdapter adapter2 = new MatingSpinnerAdapter(flowerColorGroups);
                                 p1spinner.setAdapter(adapter1);
                                 p2spinner.setAdapter(adapter2);
 
