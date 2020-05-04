@@ -6,19 +6,11 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-
-import org.molguin.acbreedinghelper.flowers.SpecificFlower;
 import org.molguin.acbreedinghelper.flowers.FlowerCollection;
 import org.molguin.acbreedinghelper.flowers.FlowerConstants;
-import org.molguin.acbreedinghelper.flowers.FlowerColorGroup;
+import org.molguin.acbreedinghelper.flowers.FuzzyFlower;
 import org.molguin.acbreedinghelper.utils.Callback;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -35,9 +27,9 @@ public class MatingViewModel extends ViewModel {
                            final FlowerConstants.Species species) {
         this.flowerCollection = flowerCollection;
         this.species = species;
-        this.dispatcher = new FuzzyFlowerMatingDispatcher(new Callback<Map<SpecificFlower, Double>, Void>() {
+        this.dispatcher = new FuzzyFlowerMatingDispatcher(new Callback<Set<FuzzyFlower>, Void>() {
             @Override
-            public Void apply(Map<SpecificFlower, Double> flowerDoubleMap) {
+            public Void apply(Set<FuzzyFlower> fuzzyFlowers) {
                 return null;
             }
         });
@@ -49,26 +41,13 @@ public class MatingViewModel extends ViewModel {
         dispatcher.shutdown();
     }
 
-    public void loadData(final Callback<Set<FlowerColorGroup>, Void> callback) {
+    public void loadData(final Callback<Set<FuzzyFlower>, Void> callback) {
         // asynchronously load flowers
         final ExecutorService exec = Executors.newSingleThreadExecutor();
         exec.submit(new Runnable() {
             @Override
             public void run() {
-                Set<SpecificFlower> specificFlowers = flowerCollection.getAllFlowersForSpecies(species);
-                Multimap<FlowerConstants.Color, SpecificFlower> colors = HashMultimap.create();
-
-                for (SpecificFlower f : specificFlowers)
-                    colors.put(f.color, f);
-
-                Set<FlowerColorGroup> flowerColorGroups = new HashSet<FlowerColorGroup>(colors.keySet().size());
-                for (Map.Entry<FlowerConstants.Color, Collection<SpecificFlower>> e : colors.asMap().entrySet()) {
-                    Set<SpecificFlower> variants = new HashSet<SpecificFlower>(e.getValue());
-                    flowerColorGroups.add(new FlowerColorGroup(MatingViewModel.this.species,
-                            e.getKey(), variants));
-                }
-
-                callback.apply(flowerColorGroups);
+                callback.apply(flowerCollection.getAllFuzzyFlowersForSpecies(species));
                 exec.shutdownNow();
             }
         });
@@ -102,12 +81,12 @@ public class MatingViewModel extends ViewModel {
         private boolean matesChanged;
         private boolean running;
         @NonNull
-        private Callback<Map<SpecificFlower, Double>, Void> callback;
+        private Callback<Set<FuzzyFlower>, Void> callback;
 
-        private FlowerColorGroup mate1;
-        private FlowerColorGroup mate2;
+        private FuzzyFlower mate1;
+        private FuzzyFlower mate2;
 
-        FuzzyFlowerMatingDispatcher(final Callback<Map<SpecificFlower, Double>, Void> matingCallback) {
+        FuzzyFlowerMatingDispatcher(final Callback<Set<FuzzyFlower>, Void> matingCallback) {
             this.lock = new ReentrantLock();
             this.cond = this.lock.newCondition();
             this.matesChanged = false;
@@ -124,29 +103,15 @@ public class MatingViewModel extends ViewModel {
                     for (; ; ) {
                         lock.lock();
                         try {
-                            while (true)
+                            while (true) {
                                 if (!running)
                                     return;
                                 else if (!matesChanged || mate1 == null || mate2 == null)
                                     cond.await();
                                 else break;
-
-                            Map<SpecificFlower, Double> all_offspring = new HashMap<SpecificFlower, Double>();
-                            double mating_count = mate1.variants.size() * mate2.variants.size();
-
-                            for (SpecificFlower parent1 : mate1.variants) {
-                                for (SpecificFlower parent2 : mate2.variants) {
-                                    Map<SpecificFlower, Double> offspring = flowerCollection.getAllOffspring(parent1, parent2);
-                                    for (Map.Entry<SpecificFlower, Double> kid : offspring.entrySet()) {
-                                        Double old_value = all_offspring.get(kid.getKey());
-                                        if (old_value == null)
-                                            old_value = 0.0;
-
-                                        all_offspring.put(kid.getKey(), (kid.getValue() / mating_count) + old_value);
-                                    }
-                                }
                             }
 
+                            Set<FuzzyFlower> all_offspring = flowerCollection.getAllOffspring(mate1, mate2);
                             callback.apply(all_offspring);
                             matesChanged = false;
 
@@ -161,7 +126,7 @@ public class MatingViewModel extends ViewModel {
             });
         }
 
-        public void setMate1(FlowerColorGroup mate) {
+        public void setMate1(FuzzyFlower mate) {
             lock.lock();
             try {
                 mate1 = mate;
@@ -172,7 +137,7 @@ public class MatingViewModel extends ViewModel {
             }
         }
 
-        public void setMate2(FlowerColorGroup mate) {
+        public void setMate2(FuzzyFlower mate) {
             lock.lock();
             try {
                 mate2 = mate;
@@ -183,7 +148,7 @@ public class MatingViewModel extends ViewModel {
             }
         }
 
-        public void setCallback(Callback<Map<SpecificFlower, Double>, Void> callback) {
+        public void setCallback(Callback<Set<FuzzyFlower>, Void> callback) {
             lock.lock();
             try {
                 this.callback = callback;

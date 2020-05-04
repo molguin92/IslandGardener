@@ -15,9 +15,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.molguin.acbreedinghelper.R;
-import org.molguin.acbreedinghelper.flowers.SpecificFlower;
 import org.molguin.acbreedinghelper.flowers.FlowerConstants;
-import org.molguin.acbreedinghelper.flowers.FlowerColorGroup;
+import org.molguin.acbreedinghelper.flowers.FuzzyFlower;
 import org.molguin.acbreedinghelper.model.MainActivityViewModel;
 import org.molguin.acbreedinghelper.model.MatingViewModel;
 import org.molguin.acbreedinghelper.utils.Callback;
@@ -25,10 +24,7 @@ import org.molguin.acbreedinghelper.utils.Callback;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class MatingFragment extends Fragment {
@@ -71,41 +67,24 @@ public class MatingFragment extends Fragment {
         resultview.setAdapter(recyclerViewAdapter);
         resultview.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        cViewModel.dispatcher.setCallback(new Callback<Map<SpecificFlower, Double>, Void>() {
+        cViewModel.dispatcher.setCallback(new Callback<Set<FuzzyFlower>, Void>() {
             @Override
-            public Void apply(final Map<SpecificFlower, Double> flowerDoubleMap) {
-                // TODO: put callback in viewmodel?
-                Map<FlowerColorGroup, Double> fuzzyFlowersProbs = new HashMap<FlowerColorGroup, Double>();
-                Map<FlowerConstants.Color, FlowerColorGroup> colorFFlowers = new HashMap<FlowerConstants.Color, FlowerColorGroup>();
-                for (Map.Entry<SpecificFlower, Double> e : flowerDoubleMap.entrySet()) {
-                    FlowerConstants.Color color = e.getKey().color;
-                    FlowerColorGroup f = colorFFlowers.get(color);
-                    if (f == null)
-                        f = new FlowerColorGroup(species, color, new HashSet<SpecificFlower>());
-                    Double probs = fuzzyFlowersProbs.get(f);
-                    if (probs == null)
-                        probs = 0.0;
-
-                    f.variants.add(e.getKey());
-                    fuzzyFlowersProbs.put(f, e.getValue() + probs);
-                    colorFFlowers.put(color, f);
-                }
-
-                final List<Map.Entry<FlowerColorGroup, Double>> entries =
-                        new ArrayList<Map.Entry<FlowerColorGroup, Double>>(fuzzyFlowersProbs.entrySet());
+            public Void apply(final Set<FuzzyFlower> offspring) {
+                final List<FuzzyFlower> offspring_list = new ArrayList<FuzzyFlower>(offspring);
 
                 // sort the entries before handing them over
-                Collections.sort(entries, new Comparator<Map.Entry<FlowerColorGroup, Double>>() {
+                // by probability, in ascending order!
+                Collections.sort(offspring_list, new Comparator<FuzzyFlower>() {
                     @Override
-                    public int compare(Map.Entry<FlowerColorGroup, Double> o1, Map.Entry<FlowerColorGroup, Double> o2) {
-                        return Double.compare(o2.getValue(), o1.getValue()); // NOTE: REVERSE ORDER!
+                    public int compare(FuzzyFlower o1, FuzzyFlower o2) {
+                        return Double.compare(o2.getTotalProbability(), o1.getTotalProbability());
                     }
                 });
 
                 requireActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        recyclerViewAdapter.submitList(entries);
+                        recyclerViewAdapter.submitList(offspring_list);
                         resultview.smoothScrollToPosition(0);
                     }
                 });
@@ -114,9 +93,9 @@ public class MatingFragment extends Fragment {
         });
 
         // load data at the end
-        cViewModel.loadData(new Callback<Set<FlowerColorGroup>, Void>() {
+        cViewModel.loadData(new Callback<Set<FuzzyFlower>, Void>() {
             @Override
-            public Void apply(final Set<FlowerColorGroup> flowerColorGroups) {
+            public Void apply(final Set<FuzzyFlower> flowerColorGroups) {
                 MatingFragment.this
                         .getActivity()
                         .runOnUiThread(new Runnable() {

@@ -1,11 +1,9 @@
 package org.molguin.acbreedinghelper.flowers;
 
-import androidx.annotation.NonNull;
-
-import java.util.Set;
+import java.util.Map;
 
 public interface FuzzyFlower extends Comparable<FuzzyFlower> {
-    Set<SpecificFlower> getVariants();
+    Map<SpecificFlower, Double> getVariantProbs();
 
     FlowerConstants.Color getColor();
 
@@ -21,4 +19,7 @@ public interface FuzzyFlower extends Comparable<FuzzyFlower> {
     int compareTo(FuzzyFlower other);
 
     String getIconName();
+
+    double getTotalProbability();
+    
 }

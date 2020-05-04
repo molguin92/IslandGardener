@@ -12,11 +12,9 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.molguin.acbreedinghelper.R;
-import org.molguin.acbreedinghelper.flowers.FlowerColorGroup;
+import org.molguin.acbreedinghelper.flowers.FuzzyFlower;
 
-import java.util.Map;
-
-public class VariantPercentageListAdapter extends ListAdapter<Map.Entry<FlowerColorGroup, Double>, VariantPercentageListAdapter.ViewHolder> {
+public class VariantPercentageListAdapter extends ListAdapter<FuzzyFlower, VariantPercentageListAdapter.ViewHolder> {
 
     VariantPercentageListAdapter() {
         super(new VariantPercentageListAdapter.DiffCallback());
@@ -32,8 +30,8 @@ public class VariantPercentageListAdapter extends ListAdapter<Map.Entry<FlowerCo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Map.Entry<FlowerColorGroup, Double> item = getItem(position);
-        holder.setFlower(item.getKey(), item.getValue());
+        FuzzyFlower flower = getItem(position);
+        holder.setFlower(flower);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -50,36 +48,34 @@ public class VariantPercentageListAdapter extends ListAdapter<Map.Entry<FlowerCo
             this.iconView = v.findViewById(R.id.flower_icon);
         }
 
-        void setFlower(FlowerColorGroup f, double probability) {
+        void setFlower(FuzzyFlower flower) {
             // set icon
             int icon_id = iconView.getContext()
                     .getResources()
-                    .getIdentifier(String.format("%s_%s",
-                            f.species.name().toLowerCase(),
-                            f.color.name().toLowerCase()),
+                    .getIdentifier(flower.getIconName(),
                             "drawable",
                             iconView.getContext().getPackageName());
 
             iconView.setImageResource(icon_id);
 
-            colorView.setText(f.color.name().toUpperCase());
+            colorView.setText(flower.getColor().name().toUpperCase());
 //            variantIdView.setText(f.human_readable_genotype);
-            percentView.setText(String.format("%.2f%%", probability * 100)); // convert to percent
+            percentView.setText(String.format("%.2f%%", flower.getTotalProbability() * 100)); // convert to percent
         }
     }
 
-    private static class DiffCallback extends DiffUtil.ItemCallback<Map.Entry<FlowerColorGroup, Double>> {
+    private static class DiffCallback extends DiffUtil.ItemCallback<FuzzyFlower> {
 
         @Override
-        public boolean areItemsTheSame(@NonNull Map.Entry<FlowerColorGroup, Double> oldItem,
-                                       @NonNull Map.Entry<FlowerColorGroup, Double> newItem) {
-            return oldItem.getKey().hashCode() == newItem.getKey().hashCode();
+        public boolean areItemsTheSame(@NonNull FuzzyFlower oldItem,
+                                       @NonNull FuzzyFlower newItem) {
+            return oldItem.hashCode() == newItem.hashCode();
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull Map.Entry<FlowerColorGroup, Double> oldItem,
-                                          @NonNull Map.Entry<FlowerColorGroup, Double> newItem) {
-            return areItemsTheSame(oldItem, newItem) && (oldItem.getValue().equals(newItem.getValue()));
+        public boolean areContentsTheSame(@NonNull FuzzyFlower oldItem,
+                                          @NonNull FuzzyFlower newItem) {
+            return areItemsTheSame(oldItem, newItem) && (oldItem.equals(newItem));
         }
     }
 }

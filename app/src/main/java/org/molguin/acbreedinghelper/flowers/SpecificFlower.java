@@ -1,7 +1,7 @@
 package org.molguin.acbreedinghelper.flowers;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class SpecificFlower extends AbstractFuzzyFlower {
     private final static String[] SYMBOLS = new String[]{"r", "y", "w", "s"};
@@ -56,9 +56,14 @@ public class SpecificFlower extends AbstractFuzzyFlower {
     }
 
     @Override
-    public Set<SpecificFlower> getVariants() {
-        Set<SpecificFlower> set = new HashSet<SpecificFlower>();
-        set.add(this);
+    public Map<SpecificFlower, Double> getVariantProbs() {
+        Map<SpecificFlower, Double> set = new TreeMap<SpecificFlower, Double>();
+        set.put(this, 1.0);
         return set;
+    }
+
+    @Override
+    public double getTotalProbability() {
+        return 1.0;
     }
 }

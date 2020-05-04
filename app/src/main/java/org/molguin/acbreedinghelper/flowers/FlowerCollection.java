@@ -22,9 +22,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class FlowerCollection {
@@ -88,13 +89,13 @@ public class FlowerCollection {
         }
     }
 
-    public Set<SpecificFlower> getAllFlowersForSpecies(FlowerConstants.Species s) {
-        return this.speciesCollections.get(s).getAllFlowers();
+    public Set<FuzzyFlower> getAllFuzzyFlowersForSpecies(FlowerConstants.Species s) {
+        return this.speciesCollections.get(s).getAllFuzzyFlowers();
     }
 
-    public Map<SpecificFlower, Double> getAllOffspring(SpecificFlower parent1, SpecificFlower parent2) {
-        if (parent1.species != parent2.species) throw new AssertionError();
-        return this.speciesCollections.get(parent1.species).getOffspring(parent1, parent2);
+    public Set<FuzzyFlower> getAllOffspring(FuzzyFlower parent1, FuzzyFlower parent2) {
+        if (parent1.getSpecies() != parent2.getSpecies()) throw new AssertionError();
+        return this.speciesCollections.get(parent1.getSpecies()).getOffspring(parent1, parent2);
     }
 
     private static class SpeciesCollection {
@@ -140,17 +141,34 @@ public class FlowerCollection {
             return this.idFlowerBiMap.values();
         }
 
-        Set<SpecificFlower> getFlowersForColor(FlowerConstants.Color color) {
-            return new HashSet<SpecificFlower>(this.colorFlowerMap.get(color));
+        Set<FuzzyFlower> getAllFuzzyFlowers() {
+            Set<FuzzyFlower> containers = new TreeSet<FuzzyFlower>();
+
+            for (FlowerConstants.Color c : this.colorFlowerMap.keySet())
+                containers.add(new FlowerColorGroup(species, c, this.colorFlowerMap.get(c)));
+
+            return containers;
         }
 
-        Set<SpecificFlower> getFlowersForOrigin(FlowerConstants.Origin origin) {
-            return new HashSet<SpecificFlower>(this.originFlowerMap.get(origin));
-        }
+        Set<FuzzyFlower> getOffspring(FuzzyFlower parent1, FuzzyFlower parent2) {
+            BiMap<FlowerConstants.Color, FuzzyFlower> results = HashBiMap.create();
+            for (Map.Entry<SpecificFlower, Double> p1 : parent1.getVariantProbs().entrySet()) {
+                for (Map.Entry<SpecificFlower, Double> p2 : parent2.getVariantProbs().entrySet()) {
+                    for (Map.Entry<SpecificFlower, Double> c : this.matings.get(p1.getKey(), p2.getKey()).entrySet()) {
+                        SpecificFlower child = c.getKey();
+                        FlowerColorGroup cgroup = (FlowerColorGroup) results.get(child.color);
+                        if (cgroup == null)
+                            cgroup = new FlowerColorGroup(this.species, child.color, new TreeMap<SpecificFlower, Double>());
 
-        Map<SpecificFlower, Double> getOffspring(SpecificFlower parent1, SpecificFlower parent2) {
-            Map<SpecificFlower, Double> offspring = this.matings.get(parent1, parent2);
-            return new HashMap<SpecificFlower, Double>(offspring);
+                        double prevProb = cgroup.getVariantProbability(child);
+                        double newProb = (c.getValue() * p1.getValue() * p2.getValue()) + prevProb;
+                        cgroup.putVariant(child, newProb);
+                        results.put(cgroup.color, cgroup);
+                    }
+                }
+            }
+
+            return results.values();
         }
     }
 }

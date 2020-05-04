@@ -8,7 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.molguin.acbreedinghelper.R;
-import org.molguin.acbreedinghelper.flowers.FlowerColorGroup;
+import org.molguin.acbreedinghelper.flowers.FuzzyFlower;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,10 +16,10 @@ import java.util.Collections;
 import java.util.List;
 
 public class MatingSpinnerAdapter extends BaseAdapter {
-    final List<FlowerColorGroup> flowers;
+    final List<FuzzyFlower> flowers;
 
-    MatingSpinnerAdapter(Collection<FlowerColorGroup> flowers) {
-        this.flowers = new ArrayList<FlowerColorGroup>(flowers);
+    MatingSpinnerAdapter(Collection<FuzzyFlower> flowers) {
+        this.flowers = new ArrayList<FuzzyFlower>(flowers);
         Collections.sort(this.flowers);
     }
 
@@ -30,7 +30,7 @@ public class MatingSpinnerAdapter extends BaseAdapter {
     }
 
     @Override
-    public FlowerColorGroup getItem(int position) {
+    public FuzzyFlower getItem(int position) {
         return this.flowers.get(position);
     }
 
@@ -46,7 +46,7 @@ public class MatingSpinnerAdapter extends BaseAdapter {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.color_holder, null);
 
-        FlowerColorGroup f = this.flowers.get(position);
+        FuzzyFlower f = this.flowers.get(position);
 
         TextView colorview = view.findViewById(R.id.flower_color);
         ImageView iconView = view.findViewById(R.id.flower_icon);
@@ -55,14 +55,14 @@ public class MatingSpinnerAdapter extends BaseAdapter {
                 .getResources()
                 .getString(R.string.variants_fmt_string);
 
-        colorview.setText(f.color.name());
+        colorview.setText(f.getColor().name());
         variantsView.setText(
-                String.format(variants_fmt_string, f.variants.size())
+                String.format(variants_fmt_string, f.getVariantProbs().size())
         );
 
         int icon_id = parent.getContext()
                 .getResources()
-                .getIdentifier(f.icon_name,
+                .getIdentifier(f.getIconName(),
                         "drawable",
                         parent.getContext().getPackageName());
 

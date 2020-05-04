@@ -1,20 +1,26 @@
 package org.molguin.acbreedinghelper.flowers;
 
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.Collection;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class FlowerColorGroup extends AbstractFuzzyFlower {
-    public final String icon_name;
-    public final Set<SpecificFlower> variants;
+    public final Map<SpecificFlower, Double> variants;
 
     public FlowerColorGroup(FlowerConstants.Species species,
                             FlowerConstants.Color color,
-                            Set<SpecificFlower> variants) {
+                            Collection<SpecificFlower> variants) {
+        this(species, color, new TreeMap<SpecificFlower, Double>());
+        for (SpecificFlower v : variants)
+            this.variants.put(v, 1.0 / variants.size());
+
+    }
+
+    public FlowerColorGroup(FlowerConstants.Species species,
+                            FlowerConstants.Color color,
+                            Map<SpecificFlower, Double> variantProbs) {
         super(species, color);
-        this.variants = new TreeSet<SpecificFlower>(variants);
-        this.icon_name = String.format("%s_%s",
-                species.name().toLowerCase(),
-                color.name().toLowerCase());
+        this.variants = new TreeMap<SpecificFlower, Double>(variantProbs);
     }
 
     @Override
@@ -28,7 +34,29 @@ public class FlowerColorGroup extends AbstractFuzzyFlower {
     }
 
     @Override
-    public Set<SpecificFlower> getVariants() {
+    public Map<SpecificFlower, Double> getVariantProbs() {
         return this.variants;
+    }
+
+    @Override
+    public double getTotalProbability() {
+        double total = 0;
+        for (double prob : this.variants.values())
+            total += prob;
+
+        return total;
+    }
+
+    void putVariant(SpecificFlower flower, double prob) {
+        // only allowed inside package!
+        this.variants.put(flower, prob);
+    }
+
+    double getVariantProbability(SpecificFlower flower) {
+        // only allowed inside package!
+        Double prob = this.variants.get(flower);
+        if (prob == null)
+            return 0.0;
+        else return prob;
     }
 }
