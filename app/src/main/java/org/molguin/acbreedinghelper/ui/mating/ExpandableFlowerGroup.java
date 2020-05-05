@@ -76,9 +76,13 @@ public class ExpandableFlowerGroup extends ExpandableGroup {
                 public void onClick(View v) {
                     if (eGroup != null) {
                         eGroup.onToggleExpanded();
-                        binding.getRoot().setSelected(eGroup.isExpanded());
-                        //binding.viewholder.arrow.setImageResource(R.drawable.ic_arrow_drop_down_circle_black_24dp);
-                        //binding.viewholder.arrow.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
+                        boolean expanded = eGroup.isExpanded();
+                        binding.getRoot().setSelected(expanded);
+
+                        if (expanded)
+                            binding.viewholder.arrow.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
+                        else
+                            binding.viewholder.arrow.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
                     }
                 }
             });

@@ -26,12 +26,17 @@ abstract class AbstractFuzzyFlower implements FuzzyFlower {
     }
 
     @Override
-    public String getIconName() {
-        return this.icon_name;
+    public int compareTo(FuzzyFlower other) {
+        if (this.isGroup() == other.isGroup())
+            return Integer.compare(this.hashCode(), other.hashCode());
+        else if (this.isGroup()) // this one is group, other is not
+            return -1;
+        else
+            return 1; // this one is not group, other is
     }
 
     @Override
-    public int compareTo(FuzzyFlower other) {
-        return Integer.compare(this.hashCode(), other.hashCode());
+    public String getIconName() {
+        return this.icon_name;
     }
 }

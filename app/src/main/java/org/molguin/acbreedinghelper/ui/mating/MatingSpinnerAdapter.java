@@ -57,7 +57,7 @@ public class MatingSpinnerAdapter extends BaseAdapter {
 
         colorview.setText(f.getColor().name());
 
-        if (f.getVariantProbs().size() == 1) {
+        if (!f.isGroup()) {
             variantsView.setText(f.humanReadableVariants());
         } else {
             variantsView.setText(

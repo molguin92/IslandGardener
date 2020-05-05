@@ -58,6 +58,11 @@ public class FlowerColorGroup extends AbstractFuzzyFlower {
         return sb.toString();
     }
 
+    @Override
+    public boolean isGroup() {
+        return true;
+    }
+
     void putVariant(SpecificFlower flower, double prob) {
         // only allowed inside package!
         this.variants.put(flower, prob);

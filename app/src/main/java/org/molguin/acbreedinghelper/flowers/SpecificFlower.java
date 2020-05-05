@@ -52,8 +52,7 @@ public class SpecificFlower extends AbstractFuzzyFlower {
 
     @Override
     public int hashCode() {
-        return 100000 + (this.species.ordinal() * 10000) + this.genotype_id;
-        // prepending 100000 to ensure variants always go after groups.
+        return (this.species.ordinal() * 100000) + (this.color.ordinal() * 10000) + this.genotype_id;
     }
 
     @Override
@@ -71,5 +70,10 @@ public class SpecificFlower extends AbstractFuzzyFlower {
     @Override
     public String humanReadableVariants() {
         return this.human_readable_genotype;
+    }
+
+    @Override
+    public boolean isGroup() {
+        return false;
     }
 }
