@@ -7,7 +7,8 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
-import com.xwray.groupie.Section;
+import com.xwray.groupie.ExpandableGroup;
+import com.xwray.groupie.ExpandableItem;
 import com.xwray.groupie.viewbinding.BindableItem;
 
 import org.molguin.acbreedinghelper.R;
@@ -22,11 +23,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-public class FuzzyFlowerSection extends Section {
+public class ExpandableFlowerGroup extends ExpandableGroup {
     private final FuzzyFlower flower;
 
-    public FuzzyFlowerSection(FuzzyFlower flower) {
-        super(new Section(new HeaderItem(flower)));
+    public ExpandableFlowerGroup(FuzzyFlower flower) {
+        super(new HeaderItem(flower), false);
         this.flower = flower;
         List<Map.Entry<SpecificFlower, Double>> entries = new ArrayList<Map.Entry<SpecificFlower, Double>>(this.flower.getVariantProbs().entrySet());
         Collections.sort(entries, new Comparator<Map.Entry<SpecificFlower, Double>>() {
@@ -40,9 +41,10 @@ public class FuzzyFlowerSection extends Section {
             this.add(new VariantItem(e));
     }
 
-    private static class HeaderItem extends BindableItem<OffspringProbCardBinding> {
+    private static class HeaderItem extends BindableItem<OffspringProbCardBinding> implements ExpandableItem {
 
         private final FuzzyFlower flower;
+        private ExpandableGroup eGroup;
 
         HeaderItem(FuzzyFlower headerFlower) {
             this.flower = headerFlower;
@@ -69,13 +71,26 @@ public class FuzzyFlowerSection extends Section {
             String fmt_string = context.getResources().getString(R.string.variants_fmt_string);
             binding.viewholder.flowerVariantId.setText(String.format(fmt_string, flower.getVariantProbs().size()));
 
+            binding.getRoot().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (eGroup != null)
+                        eGroup.onToggleExpanded();
+                }
+            });
         }
 
         @Override
         public int getLayout() {
             return R.layout.offspring_prob_card;
         }
+
+        @Override
+        public void setExpandableGroup(@NonNull ExpandableGroup onToggleListener) {
+            this.eGroup = onToggleListener;
+        }
     }
+
 
     private static class VariantItem extends BindableItem<org.molguin.acbreedinghelper.databinding.VariantProbHolderBinding> {
         // for subitems

@@ -91,7 +91,7 @@ public class MatingFragment extends Fragment {
                     public void run() {
                         adapter.clear();
                         for (FuzzyFlower offspring : offspring_list)
-                            adapter.add(new FuzzyFlowerSection(offspring));
+                            adapter.add(new ExpandableFlowerGroup(offspring));
                         resultview.smoothScrollToPosition(0);
                     }
                 });
