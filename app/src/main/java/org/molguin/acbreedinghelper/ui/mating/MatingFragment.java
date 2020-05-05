@@ -5,10 +5,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -67,6 +70,12 @@ public class MatingFragment extends Fragment {
         final Spinner p2spinner = this.binding.parent2Spinner;
         final RecyclerView resultview = this.binding.resultRecyclerView;
 
+        final ConstraintLayout spinnerLayout = this.binding.spinnerLayout;
+
+        final ProgressBar pbar = this.binding.loadingPbar;
+        pbar.setIndeterminate(true);
+        final TextView loadText = this.binding.loadingText;
+
 //        final VariantPercentageListAdapter recyclerViewAdapter = new VariantPercentageListAdapter();
         final GroupAdapter adapter = new GroupAdapter();
         resultview.setAdapter(adapter);
@@ -103,41 +112,44 @@ public class MatingFragment extends Fragment {
         viewModel.loadData(new Callback<List<FuzzyFlower>, Void>() {
             @Override
             public Void apply(final List<FuzzyFlower> flowers) {
+                final MatingSpinnerAdapter adapter1 = new MatingSpinnerAdapter(flowers);
+                final MatingSpinnerAdapter adapter2 = new MatingSpinnerAdapter(flowers);
+                // on item selected listeners
+                p1spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        viewModel.dispatcher.setMate1(adapter1.getItem(position));
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+
+                    }
+                });
+
+                // on item selected listeners
+                p2spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        viewModel.dispatcher.setMate2(adapter2.getItem(position));
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+
+                    }
+                });
+
                 MatingFragment.this
                         .getActivity()
                         .runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                final MatingSpinnerAdapter adapter1 = new MatingSpinnerAdapter(flowers);
-                                final MatingSpinnerAdapter adapter2 = new MatingSpinnerAdapter(flowers);
                                 p1spinner.setAdapter(adapter1);
                                 p2spinner.setAdapter(adapter2);
 
-                                // on item selected listeners
-                                p1spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                                    @Override
-                                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                        viewModel.dispatcher.setMate1(adapter1.getItem(position));
-                                    }
-
-                                    @Override
-                                    public void onNothingSelected(AdapterView<?> parent) {
-
-                                    }
-                                });
-
-                                // on item selected listeners
-                                p2spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                                    @Override
-                                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                        viewModel.dispatcher.setMate2(adapter2.getItem(position));
-                                    }
-
-                                    @Override
-                                    public void onNothingSelected(AdapterView<?> parent) {
-
-                                    }
-                                });
+                                pbar.setVisibility(View.GONE);
+                                loadText.setVisibility(View.GONE);
                             }
                         });
                 return null;
