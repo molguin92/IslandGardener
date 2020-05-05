@@ -11,6 +11,9 @@ import org.molguin.acbreedinghelper.flowers.FlowerConstants;
 import org.molguin.acbreedinghelper.flowers.FuzzyFlower;
 import org.molguin.acbreedinghelper.utils.Callback;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -41,13 +44,20 @@ public class MatingViewModel extends ViewModel {
         dispatcher.shutdown();
     }
 
-    public void loadData(final Callback<Set<FuzzyFlower>, Void> callback) {
+    public void loadData(final Callback<List<FuzzyFlower>, Void> callback) {
         // asynchronously load flowers
         final ExecutorService exec = Executors.newSingleThreadExecutor();
         exec.submit(new Runnable() {
             @Override
             public void run() {
-                callback.apply(flowerCollection.getAllFuzzyFlowersForSpecies(species));
+                Set<FuzzyFlower> flowers = flowerCollection.getAllFuzzyFlowersForSpecies(species);
+                flowers.addAll(flowerCollection.getAllFlowersForSpecies(species));
+
+                // sort here instead of in spinner, save some cycles!
+                List<FuzzyFlower> flowerList = new ArrayList<FuzzyFlower>(flowers);
+                Collections.sort(flowerList);
+
+                callback.apply(flowerList);
                 exec.shutdownNow();
             }
         });

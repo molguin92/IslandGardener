@@ -1,6 +1,7 @@
 package org.molguin.acbreedinghelper.flowers;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -24,11 +25,6 @@ public class FlowerColorGroup extends AbstractFuzzyFlower {
     }
 
     @Override
-    public int compareTo(FuzzyFlower other) {
-        return Integer.compare(this.hashCode(), other.hashCode());
-    }
-
-    @Override
     public int hashCode() {
         return (this.species.ordinal() * 100) + (this.color.ordinal() * 10) + this.variants.size();
     }
@@ -45,6 +41,21 @@ public class FlowerColorGroup extends AbstractFuzzyFlower {
             total += prob;
 
         return total;
+    }
+
+    @Override
+    public String humanReadableVariants() {
+        Iterator<SpecificFlower> iter = this.variants.keySet().iterator();
+        if (!iter.hasNext()) return "";
+
+        StringBuilder sb = new StringBuilder();
+        while (true) {
+            sb.append(iter.next().human_readable_genotype);
+            if (iter.hasNext()) {
+                sb.append(", ");
+            } else break;
+        }
+        return sb.toString();
     }
 
     void putVariant(SpecificFlower flower, double prob) {

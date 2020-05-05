@@ -61,7 +61,7 @@ public class MatingFragment extends Fragment {
 
         MainActivityViewModel mViewModel = new ViewModelProvider(this.getActivity()).get(MainActivityViewModel.class);
         MatingViewModel.Factory factory = new MatingViewModel.Factory(mViewModel.getFlowerCollection(), species);
-        final MatingViewModel cViewModel = new ViewModelProvider(this, factory).get(MatingViewModel.class);
+        final MatingViewModel viewModel = new ViewModelProvider(this, factory).get(MatingViewModel.class);
 
         final Spinner p1spinner = this.binding.parent1Spinner;
         final Spinner p2spinner = this.binding.parent2Spinner;
@@ -72,7 +72,7 @@ public class MatingFragment extends Fragment {
         resultview.setAdapter(adapter);
         resultview.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        cViewModel.dispatcher.setCallback(new Callback<Set<FuzzyFlower>, Void>() {
+        viewModel.dispatcher.setCallback(new Callback<Set<FuzzyFlower>, Void>() {
             @Override
             public Void apply(final Set<FuzzyFlower> offspring) {
                 final List<FuzzyFlower> offspring_list = new ArrayList<FuzzyFlower>(offspring);
@@ -100,16 +100,16 @@ public class MatingFragment extends Fragment {
         });
 
         // load data at the end
-        cViewModel.loadData(new Callback<Set<FuzzyFlower>, Void>() {
+        viewModel.loadData(new Callback<List<FuzzyFlower>, Void>() {
             @Override
-            public Void apply(final Set<FuzzyFlower> flowerColorGroups) {
+            public Void apply(final List<FuzzyFlower> flowers) {
                 MatingFragment.this
                         .getActivity()
                         .runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                final MatingSpinnerAdapter adapter1 = new MatingSpinnerAdapter(flowerColorGroups);
-                                final MatingSpinnerAdapter adapter2 = new MatingSpinnerAdapter(flowerColorGroups);
+                                final MatingSpinnerAdapter adapter1 = new MatingSpinnerAdapter(flowers);
+                                final MatingSpinnerAdapter adapter2 = new MatingSpinnerAdapter(flowers);
                                 p1spinner.setAdapter(adapter1);
                                 p2spinner.setAdapter(adapter2);
 
@@ -117,7 +117,7 @@ public class MatingFragment extends Fragment {
                                 p1spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                     @Override
                                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                        cViewModel.dispatcher.setMate1(adapter1.getItem(position));
+                                        viewModel.dispatcher.setMate1(adapter1.getItem(position));
                                     }
 
                                     @Override
@@ -130,7 +130,7 @@ public class MatingFragment extends Fragment {
                                 p2spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                     @Override
                                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                        cViewModel.dispatcher.setMate2(adapter2.getItem(position));
+                                        viewModel.dispatcher.setMate2(adapter2.getItem(position));
                                     }
 
                                     @Override

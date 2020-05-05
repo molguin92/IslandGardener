@@ -13,7 +13,6 @@ import org.molguin.acbreedinghelper.flowers.FuzzyFlower;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 public class MatingSpinnerAdapter extends BaseAdapter {
@@ -21,7 +20,6 @@ public class MatingSpinnerAdapter extends BaseAdapter {
 
     MatingSpinnerAdapter(Collection<FuzzyFlower> flowers) {
         this.flowers = new ArrayList<FuzzyFlower>(flowers);
-        Collections.sort(this.flowers);
     }
 
 
@@ -58,9 +56,14 @@ public class MatingSpinnerAdapter extends BaseAdapter {
                 .getString(R.string.variants_fmt_string);
 
         colorview.setText(f.getColor().name());
-        variantsView.setText(
-                String.format(variants_fmt_string, f.getVariantProbs().size())
-        );
+
+        if (f.getVariantProbs().size() == 1) {
+            variantsView.setText(f.humanReadableVariants());
+        } else {
+            variantsView.setText(
+                    String.format(variants_fmt_string, f.getVariantProbs().size())
+            );
+        }
 
         int icon_id = parent.getContext()
                 .getResources()

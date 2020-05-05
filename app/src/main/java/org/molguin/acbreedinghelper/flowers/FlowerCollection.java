@@ -93,6 +93,10 @@ public class FlowerCollection {
         return this.speciesCollections.get(s).getAllFuzzyFlowers();
     }
 
+    public Set<FuzzyFlower> getAllFlowersForSpecies(FlowerConstants.Species s) {
+        return new TreeSet<FuzzyFlower>(this.speciesCollections.get(s).getAllFlowers());
+    }
+
     public Set<FuzzyFlower> getAllOffspring(FuzzyFlower parent1, FuzzyFlower parent2) {
         if (parent1.getSpecies() != parent2.getSpecies()) throw new AssertionError();
         return this.speciesCollections.get(parent1.getSpecies()).getOffspring(parent1, parent2);

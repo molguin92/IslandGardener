@@ -21,5 +21,7 @@ public interface FuzzyFlower extends Comparable<FuzzyFlower> {
     String getIconName();
 
     double getTotalProbability();
+
+    String humanReadableVariants();
     
 }
