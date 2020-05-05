@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.molguin.acbreedinghelper.R;
+import org.molguin.acbreedinghelper.databinding.ColorHolderBinding;
 import org.molguin.acbreedinghelper.flowers.FuzzyFlower;
 
 import java.util.ArrayList;
@@ -44,13 +45,14 @@ public class MatingSpinnerAdapter extends BaseAdapter {
         // TODO: viewholder pattern
 
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.color_holder, null);
+        ColorHolderBinding binding = ColorHolderBinding.inflate(inflater);
+        View view = binding.getRoot();
 
         FuzzyFlower f = this.flowers.get(position);
 
-        TextView colorview = view.findViewById(R.id.flower_color);
-        ImageView iconView = view.findViewById(R.id.flower_icon);
-        TextView variantsView = view.findViewById(R.id.variants_heading);
+        TextView colorview = binding.flowerColor;
+        ImageView iconView = binding.flowerIcon;
+        TextView variantsView = binding.variantsHeading;
         String variants_fmt_string = parent.getContext()
                 .getResources()
                 .getString(R.string.variants_fmt_string);

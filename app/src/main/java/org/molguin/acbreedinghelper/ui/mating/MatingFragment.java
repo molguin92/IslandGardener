@@ -14,7 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.molguin.acbreedinghelper.R;
+import org.molguin.acbreedinghelper.databinding.MatingCalcLayoutBinding;
 import org.molguin.acbreedinghelper.flowers.FlowerConstants;
 import org.molguin.acbreedinghelper.flowers.FuzzyFlower;
 import org.molguin.acbreedinghelper.model.MainActivityViewModel;
@@ -29,6 +29,7 @@ import java.util.Set;
 
 public class MatingFragment extends Fragment {
     public static final String ARG_SPECIES_ORDINAL = "species";
+    private MatingCalcLayoutBinding binding;
 
 
     public MatingFragment() {
@@ -43,7 +44,8 @@ public class MatingFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.mating_calc_layout, container, false);
+        this.binding = MatingCalcLayoutBinding.inflate(inflater);
+        return this.binding.getRoot();
 
     }
 
@@ -59,9 +61,9 @@ public class MatingFragment extends Fragment {
         MatingViewModel.Factory factory = new MatingViewModel.Factory(mViewModel.getFlowerCollection(), species);
         final MatingViewModel cViewModel = new ViewModelProvider(this, factory).get(MatingViewModel.class);
 
-        final Spinner p1spinner = view.findViewById(R.id.parent1_spinner);
-        final Spinner p2spinner = view.findViewById(R.id.parent2_spinner);
-        final RecyclerView resultview = view.findViewById(R.id.result_recycler_view);
+        final Spinner p1spinner = this.binding.parent1Spinner;
+        final Spinner p2spinner = this.binding.parent2Spinner;
+        final RecyclerView resultview = this.binding.resultRecyclerView;
 
         final VariantPercentageListAdapter recyclerViewAdapter = new VariantPercentageListAdapter();
         resultview.setAdapter(recyclerViewAdapter);

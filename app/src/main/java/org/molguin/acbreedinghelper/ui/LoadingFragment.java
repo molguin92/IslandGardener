@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import org.molguin.acbreedinghelper.R;
+import org.molguin.acbreedinghelper.databinding.LoadingFragmentBinding;
 
 public class LoadingFragment extends Fragment {
     public LoadingFragment() {
@@ -23,7 +23,7 @@ public class LoadingFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.loading_fragment, container, false);
+        return LoadingFragmentBinding.inflate(inflater).getRoot();
 
     }
 }

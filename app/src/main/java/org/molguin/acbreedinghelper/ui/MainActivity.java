@@ -2,11 +2,12 @@ package org.molguin.acbreedinghelper.ui;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import org.molguin.acbreedinghelper.R;
+import org.molguin.acbreedinghelper.databinding.MainActivityBinding;
 import org.molguin.acbreedinghelper.flowers.FlowerCollection;
 import org.molguin.acbreedinghelper.model.MainActivityViewModel;
 
@@ -18,10 +19,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_activity);
+        final MainActivityBinding binding = MainActivityBinding.inflate(getLayoutInflater());
+        final View view = binding.getRoot();
+        setContentView(view);
         // loading splash screen
         this.getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, LoadingFragment.newInstance())
+                .replace(binding.container.getId(), LoadingFragment.newInstance())
                 .commitNow();
 
         // load data in background
@@ -39,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
                             new ViewModelProvider(MainActivity.this, fact).get(MainActivityViewModel.class);
                             getSupportFragmentManager()
                                     .beginTransaction()
-                                    .replace(R.id.container, SpeciesTabFragment.newInstance())
+                                    .replace(binding.container.getId(), SpeciesTabFragment.newInstance())
                                     .commitNow();
                             execServ.shutdownNow();
                         }

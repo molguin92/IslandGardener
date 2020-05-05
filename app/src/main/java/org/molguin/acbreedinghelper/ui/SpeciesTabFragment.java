@@ -14,13 +14,14 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-import org.molguin.acbreedinghelper.R;
+import org.molguin.acbreedinghelper.databinding.FragmentTabBinding;
 import org.molguin.acbreedinghelper.flowers.FlowerConstants;
 import org.molguin.acbreedinghelper.ui.mating.MatingFragment;
 
 public class SpeciesTabFragment extends Fragment {
     FlowerFragmentAdapter flowerFragmentAdapter;
     ViewPager2 viewPager;
+    FragmentTabBinding binding;
 
     public static SpeciesTabFragment newInstance() {
         return new SpeciesTabFragment();
@@ -30,17 +31,18 @@ public class SpeciesTabFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_tab, container, false);
+        this.binding = FragmentTabBinding.inflate(inflater);
+        return this.binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         flowerFragmentAdapter = new FlowerFragmentAdapter(this);
-        viewPager = view.findViewById(R.id.flower_pager);
+        viewPager = this.binding.flowerPager;
         viewPager.setAdapter(flowerFragmentAdapter);
         viewPager.setOffscreenPageLimit(FlowerConstants.Species.values().length);
 
-        TabLayout tabLayout = view.findViewById(R.id.tab_layout);
+        TabLayout tabLayout = this.binding.tabLayout;
         new TabLayoutMediator(tabLayout, viewPager, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override
             public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
