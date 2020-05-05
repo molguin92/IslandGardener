@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/flower_details"
     android:padding="16dp"
-    android:paddingEnd="32dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?android:selectableItemBackground">
@@ -53,9 +52,8 @@
         android:id="@+id/variants_heading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
         android:text="@string/variants_fmt_string"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:textStyle="italic" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,5 +1,6 @@
 package org.molguin.acbreedinghelper.ui.mating;
 
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,7 +44,7 @@ public class MatingSpinnerAdapter extends BaseAdapter {
         // TODO: viewholder pattern
 
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        ColorHolderBinding binding = ColorHolderBinding.inflate(inflater);
+        ColorHolderBinding binding = ColorHolderBinding.inflate(inflater, parent, false);
         View view = binding.getRoot();
 
         FuzzyFlower f = this.flowers.get(position);
@@ -56,13 +57,12 @@ public class MatingSpinnerAdapter extends BaseAdapter {
                 .getString(R.string.variants_fmt_string);
 
         colorview.setText(f.getColor().name());
-
         if (!f.isGroup()) {
+            colorview.setTypeface(null, Typeface.NORMAL);
             variantsView.setText(f.humanReadableVariants());
         } else {
             variantsView.setText(
-                    String.format(variants_fmt_string, f.getVariantProbs().size())
-            );
+                    String.format(variants_fmt_string, f.getVariantProbs().size()));
         }
 
         int icon_id = parent.getContext()
