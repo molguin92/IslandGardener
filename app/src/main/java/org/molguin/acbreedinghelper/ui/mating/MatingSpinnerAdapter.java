@@ -41,38 +41,58 @@ public class MatingSpinnerAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        // TODO: viewholder pattern
+        ViewHolder vh;
+        if (convertView == null) {
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+            ColorHolderBinding binding = ColorHolderBinding.inflate(inflater, parent, false);
+            vh = new ViewHolder(binding);
+        } else
+            vh = (ViewHolder) convertView.getTag();
 
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        ColorHolderBinding binding = ColorHolderBinding.inflate(inflater, parent, false);
-        View view = binding.getRoot();
 
         FuzzyFlower f = this.flowers.get(position);
+        vh.bind(f);
+        return vh.rootView;
+    }
 
-        TextView colorview = binding.flowerColor;
-        ImageView iconView = binding.flowerIcon;
-        TextView variantsView = binding.variantsHeading;
-        String variants_fmt_string = parent.getContext()
-                .getResources()
-                .getString(R.string.variants_fmt_string);
+    private static class ViewHolder {
+        private final TextView colorview;
+        private final ImageView iconView;
+        private final TextView variantsView;
+        private final String variants_fmt_string;
+        private final View rootView;
 
-        colorview.setText(f.getColor().name());
-        if (!f.isGroup()) {
-            colorview.setTypeface(null, Typeface.NORMAL);
-            variantsView.setText(f.humanReadableVariants());
-        } else {
-            variantsView.setText(
-                    String.format(variants_fmt_string, f.getVariantProbs().size()));
+        ViewHolder(ColorHolderBinding binding) {
+            this.rootView = binding.getRoot();
+            this.rootView.setTag(this);
+
+            this.colorview = binding.flowerColor;
+            this.iconView = binding.flowerIcon;
+            this.variantsView = binding.variantsHeading;
+            this.variants_fmt_string = this.rootView
+                    .getContext()
+                    .getResources()
+                    .getString(R.string.variants_fmt_string);
         }
 
-        int icon_id = parent.getContext()
-                .getResources()
-                .getIdentifier(f.getIconName(),
-                        "drawable",
-                        parent.getContext().getPackageName());
+        void bind(FuzzyFlower f) {
+            this.colorview.setText(f.getColor().name());
+            if (!f.isGroup()) {
+                this.colorview.setTypeface(null, Typeface.NORMAL);
+                this.variantsView.setText(f.humanReadableVariants());
+            } else {
+                this.variantsView.setText(
+                        String.format(this.variants_fmt_string, f.getVariantProbs().size()));
+            }
 
-        iconView.setImageResource(icon_id);
+            int icon_id = this.rootView.getContext()
+                    .getResources()
+                    .getIdentifier(f.getIconName(),
+                            "drawable",
+                            this.rootView.getContext().getPackageName());
 
-        return view;
+            iconView.setImageResource(icon_id);
+        }
+
     }
 }

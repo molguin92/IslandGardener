@@ -11,12 +11,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.xwray.groupie.Group;
 import com.xwray.groupie.GroupAdapter;
 
 import org.molguin.acbreedinghelper.databinding.MatingCalcLayoutBinding;
@@ -27,10 +27,9 @@ import org.molguin.acbreedinghelper.model.MatingViewModel;
 import org.molguin.acbreedinghelper.utils.Callback;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 
 public class MatingFragment extends Fragment {
     public static final String ARG_SPECIES_ORDINAL = "species";
@@ -68,12 +67,36 @@ public class MatingFragment extends Fragment {
 
         final Spinner p1spinner = this.binding.parent1Spinner;
         final Spinner p2spinner = this.binding.parent2Spinner;
+
+        // on item selected listeners
+        p1spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                viewModel.dispatcher.setMate1((FuzzyFlower) parent.getAdapter().getItem(position));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        // on item selected listeners
+        p2spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                viewModel.dispatcher.setMate2((FuzzyFlower) parent.getAdapter().getItem(position));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
         final RecyclerView resultview = this.binding.resultRecyclerView;
 
-        final ConstraintLayout spinnerLayout = this.binding.spinnerLayout;
-
         final ProgressBar pbar = this.binding.loadingPbar;
-        pbar.setIndeterminate(true);
         final TextView loadText = this.binding.loadingText;
 
 //        final VariantPercentageListAdapter recyclerViewAdapter = new VariantPercentageListAdapter();
@@ -84,23 +107,28 @@ public class MatingFragment extends Fragment {
         viewModel.dispatcher.setCallback(new Callback<Set<FuzzyFlower>, Void>() {
             @Override
             public Void apply(final Set<FuzzyFlower> offspring) {
-                final List<FuzzyFlower> offspring_list = new ArrayList<FuzzyFlower>(offspring);
+                // offspring already sorted, no need to sort again
+//                final List<FuzzyFlower> offspring_list = new ArrayList<FuzzyFlower>(offspring);
+//
+//                // sort the entries before handing them over
+//                // by probability, in ascending order!
+//                Collections.sort(offspring_list, new Comparator<FuzzyFlower>() {
+//                    @Override
+//                    public int compare(FuzzyFlower o1, FuzzyFlower o2) {
+//                        return Double.compare(o2.getTotalProbability(), o1.getTotalProbability());
+//                    }
+//                });
 
-                // sort the entries before handing them over
-                // by probability, in ascending order!
-                Collections.sort(offspring_list, new Comparator<FuzzyFlower>() {
-                    @Override
-                    public int compare(FuzzyFlower o1, FuzzyFlower o2) {
-                        return Double.compare(o2.getTotalProbability(), o1.getTotalProbability());
-                    }
-                });
+                // prepare groups in background thread
+                final List<Group> groups = new ArrayList<Group>();
+                for (FuzzyFlower flower : offspring)
+                    groups.add(new ExpandableFlowerGroup(flower));
 
                 requireActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         adapter.clear();
-                        for (FuzzyFlower offspring : offspring_list)
-                            adapter.add(new ExpandableFlowerGroup(offspring));
+                        adapter.addAll(groups);
                         resultview.smoothScrollToPosition(0);
                     }
                 });
@@ -109,44 +137,17 @@ public class MatingFragment extends Fragment {
         });
 
         // load data at the end
-        viewModel.loadData(new Callback<List<FuzzyFlower>, Void>() {
+        viewModel.loadData(new Callback<SortedSet<FuzzyFlower>, Void>() {
             @Override
-            public Void apply(final List<FuzzyFlower> flowers) {
-                final MatingSpinnerAdapter adapter1 = new MatingSpinnerAdapter(flowers);
-                final MatingSpinnerAdapter adapter2 = new MatingSpinnerAdapter(flowers);
-                // on item selected listeners
-                p1spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        viewModel.dispatcher.setMate1(adapter1.getItem(position));
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-
-                    }
-                });
-
-                // on item selected listeners
-                p2spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        viewModel.dispatcher.setMate2(adapter2.getItem(position));
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-
-                    }
-                });
-
+            public Void apply(final SortedSet<FuzzyFlower> flowers) {
+                final MatingSpinnerAdapter adapter = new MatingSpinnerAdapter(flowers);
                 MatingFragment.this
                         .getActivity()
                         .runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                p1spinner.setAdapter(adapter1);
-                                p2spinner.setAdapter(adapter2);
+                                p1spinner.setAdapter(adapter);
+                                p2spinner.setAdapter(adapter);
 
                                 pbar.setVisibility(View.GONE);
                                 loadText.setVisibility(View.GONE);

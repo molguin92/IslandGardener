@@ -70,6 +70,7 @@ public class ExpandableFlowerGroup extends ExpandableGroup {
 
             String fmt_string = context.getResources().getString(R.string.variants_fmt_string);
             binding.viewholder.flowerVariantId.setText(String.format(fmt_string, flower.getVariantProbs().size()));
+            binding.viewholder.arrow.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
 
             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override

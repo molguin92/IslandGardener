@@ -21,9 +21,10 @@ import org.molguin.acbreedinghelper.R;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
@@ -89,15 +90,15 @@ public class FlowerCollection {
         }
     }
 
-    public Set<FuzzyFlower> getAllFuzzyFlowersForSpecies(FlowerConstants.Species s) {
+    public SortedSet<FuzzyFlower> getAllFuzzyFlowersForSpecies(FlowerConstants.Species s) {
         return this.speciesCollections.get(s).getAllFuzzyFlowers();
     }
 
-    public Set<FuzzyFlower> getAllFlowersForSpecies(FlowerConstants.Species s) {
+    public SortedSet<FuzzyFlower> getAllFlowersForSpecies(FlowerConstants.Species s) {
         return new TreeSet<FuzzyFlower>(this.speciesCollections.get(s).getAllFlowers());
     }
 
-    public Set<FuzzyFlower> getAllOffspring(FuzzyFlower parent1, FuzzyFlower parent2) {
+    public SortedSet<FuzzyFlower> getAllOffspring(FuzzyFlower parent1, FuzzyFlower parent2) {
         if (parent1.getSpecies() != parent2.getSpecies()) throw new AssertionError();
         return this.speciesCollections.get(parent1.getSpecies()).getOffspring(parent1, parent2);
     }
@@ -141,12 +142,12 @@ public class FlowerCollection {
             this.matings.put(specificFlower2, specificFlower1, offspringMap);
         }
 
-        Set<SpecificFlower> getAllFlowers() {
-            return this.idFlowerBiMap.values();
+        SortedSet<SpecificFlower> getAllFlowers() {
+            return new TreeSet<SpecificFlower>(this.idFlowerBiMap.values());
         }
 
-        Set<FuzzyFlower> getAllFuzzyFlowers() {
-            Set<FuzzyFlower> containers = new TreeSet<FuzzyFlower>();
+        SortedSet<FuzzyFlower> getAllFuzzyFlowers() {
+            SortedSet<FuzzyFlower> containers = new TreeSet<FuzzyFlower>();
 
             for (FlowerConstants.Color c : this.colorFlowerMap.keySet())
                 containers.add(new FlowerColorGroup(species, c, this.colorFlowerMap.get(c)));
@@ -154,7 +155,7 @@ public class FlowerCollection {
             return containers;
         }
 
-        Set<FuzzyFlower> getOffspring(FuzzyFlower parent1, FuzzyFlower parent2) {
+        SortedSet<FuzzyFlower> getOffspring(FuzzyFlower parent1, FuzzyFlower parent2) {
             BiMap<FlowerConstants.Color, FuzzyFlower> results = HashBiMap.create();
             for (Map.Entry<SpecificFlower, Double> p1 : parent1.getVariantProbs().entrySet()) {
                 for (Map.Entry<SpecificFlower, Double> p2 : parent2.getVariantProbs().entrySet()) {
@@ -172,7 +173,16 @@ public class FlowerCollection {
                 }
             }
 
-            return results.values();
+            // return offspring ordered by descending probability
+            SortedSet<FuzzyFlower> resultSet = new TreeSet<FuzzyFlower>(new Comparator<FuzzyFlower>() {
+                @Override
+                public int compare(FuzzyFlower f1, FuzzyFlower f2) {
+                    return Double.compare(f2.getTotalProbability(), f1.getTotalProbability());
+                }
+            });
+
+            resultSet.addAll(results.values());
+            return resultSet;
         }
     }
 }

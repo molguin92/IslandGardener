@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Condition;
@@ -44,20 +45,15 @@ public class MatingViewModel extends ViewModel {
         dispatcher.shutdown();
     }
 
-    public void loadData(final Callback<List<FuzzyFlower>, Void> callback) {
+    public void loadData(final Callback<SortedSet<FuzzyFlower>, Void> callback) {
         // asynchronously load flowers
         final ExecutorService exec = Executors.newSingleThreadExecutor();
         exec.submit(new Runnable() {
             @Override
             public void run() {
-                Set<FuzzyFlower> flowers = flowerCollection.getAllFuzzyFlowersForSpecies(species);
-                flowers.addAll(flowerCollection.getAllFlowersForSpecies(species));
-
-                // sort here instead of in spinner, save some cycles!
-                List<FuzzyFlower> flowerList = new ArrayList<FuzzyFlower>(flowers);
-                Collections.sort(flowerList);
-
-                callback.apply(flowerList);
+                SortedSet<FuzzyFlower> spinnerFlowers = flowerCollection.getAllFuzzyFlowersForSpecies(species);
+                spinnerFlowers.addAll(flowerCollection.getAllFlowersForSpecies(species));
+                callback.apply(spinnerFlowers);
                 exec.shutdownNow();
             }
         });
@@ -121,7 +117,7 @@ public class MatingViewModel extends ViewModel {
                                 else break;
                             }
 
-                            Set<FuzzyFlower> all_offspring = flowerCollection.getAllOffspring(mate1, mate2);
+                            SortedSet<FuzzyFlower> all_offspring = flowerCollection.getAllOffspring(mate1, mate2);
                             callback.apply(all_offspring);
                             matesChanged = false;
 
