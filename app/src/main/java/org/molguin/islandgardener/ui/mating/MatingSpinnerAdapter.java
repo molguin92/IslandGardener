@@ -1,4 +1,4 @@
-package org.molguin.acbreedinghelper.ui.mating;
+package org.molguin.islandgardener.ui.mating;
 
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
@@ -8,9 +8,9 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.molguin.acbreedinghelper.R;
-import org.molguin.acbreedinghelper.databinding.ColorHolderBinding;
-import org.molguin.acbreedinghelper.flowers.FuzzyFlower;
+import org.molguin.islandgardener.R;
+import org.molguin.islandgardener.databinding.ColorHolderBinding;
+import org.molguin.islandgardener.flowers.FuzzyFlower;
 
 import java.util.ArrayList;
 import java.util.Collection;

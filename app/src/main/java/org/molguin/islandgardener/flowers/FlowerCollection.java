@@ -1,4 +1,4 @@
-package org.molguin.acbreedinghelper.flowers;
+package org.molguin.islandgardener.flowers;
 
 import android.content.Context;
 import android.content.res.AssetManager;
@@ -16,7 +16,7 @@ import com.google.common.collect.Table;
 import com.google.common.collect.Tables;
 import com.google.common.collect.TreeMultimap;
 
-import org.molguin.acbreedinghelper.R;
+import org.molguin.islandgardener.R;
 
 import java.io.IOException;
 import java.io.InputStreamReader;

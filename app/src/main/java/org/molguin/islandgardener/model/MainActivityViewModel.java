@@ -1,14 +1,10 @@
-package org.molguin.acbreedinghelper.model;
-
-import android.util.Log;
+package org.molguin.islandgardener.model;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import org.molguin.acbreedinghelper.flowers.FlowerCollection;
-
-import java.io.IOException;
+import org.molguin.islandgardener.flowers.FlowerCollection;
 
 public class MainActivityViewModel extends ViewModel {
     private final FlowerCollection flowerCollection;

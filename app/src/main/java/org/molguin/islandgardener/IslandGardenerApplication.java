@@ -1,9 +1,9 @@
-package org.molguin.acbreedinghelper;
+package org.molguin.islandgardener;
 
 import android.app.Application;
 import android.content.res.Configuration;
 
-public class FlowerBreedingApplication extends Application {
+public class IslandGardenerApplication extends Application {
     // Called when the application is starting, before any other application objects have been created.
     // Overriding this method is totally optional!
     @Override

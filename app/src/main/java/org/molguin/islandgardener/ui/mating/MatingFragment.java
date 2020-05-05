@@ -1,4 +1,4 @@
-package org.molguin.acbreedinghelper.ui.mating;
+package org.molguin.islandgardener.ui.mating;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -19,12 +19,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.xwray.groupie.Group;
 import com.xwray.groupie.GroupAdapter;
 
-import org.molguin.acbreedinghelper.databinding.MatingCalcLayoutBinding;
-import org.molguin.acbreedinghelper.flowers.FlowerConstants;
-import org.molguin.acbreedinghelper.flowers.FuzzyFlower;
-import org.molguin.acbreedinghelper.model.MainActivityViewModel;
-import org.molguin.acbreedinghelper.model.MatingViewModel;
-import org.molguin.acbreedinghelper.utils.Callback;
+import org.molguin.islandgardener.databinding.MatingCalcLayoutBinding;
+import org.molguin.islandgardener.flowers.FlowerConstants;
+import org.molguin.islandgardener.flowers.FuzzyFlower;
+import org.molguin.islandgardener.model.MainActivityViewModel;
+import org.molguin.islandgardener.model.MatingViewModel;
+import org.molguin.islandgardener.utils.Callback;
 
 import java.util.ArrayList;
 import java.util.List;

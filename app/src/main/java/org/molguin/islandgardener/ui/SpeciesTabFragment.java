@@ -1,4 +1,4 @@
-package org.molguin.acbreedinghelper.ui;
+package org.molguin.islandgardener.ui;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,9 +14,9 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-import org.molguin.acbreedinghelper.databinding.FragmentTabBinding;
-import org.molguin.acbreedinghelper.flowers.FlowerConstants;
-import org.molguin.acbreedinghelper.ui.mating.MatingFragment;
+import org.molguin.islandgardener.databinding.FragmentTabBinding;
+import org.molguin.islandgardener.flowers.FlowerConstants;
+import org.molguin.islandgardener.ui.mating.MatingFragment;
 
 public class SpeciesTabFragment extends Fragment {
     FlowerFragmentAdapter flowerFragmentAdapter;

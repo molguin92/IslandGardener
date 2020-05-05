@@ -1,4 +1,4 @@
-package org.molguin.acbreedinghelper.flowers;
+package org.molguin.islandgardener.flowers;
 
 public class FlowerConstants {
     public enum Species {

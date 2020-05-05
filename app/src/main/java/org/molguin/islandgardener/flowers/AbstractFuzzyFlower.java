@@ -1,4 +1,4 @@
-package org.molguin.acbreedinghelper.flowers;
+package org.molguin.islandgardener.flowers;
 
 abstract class AbstractFuzzyFlower implements FuzzyFlower {
     protected final FlowerConstants.Color color;

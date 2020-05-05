@@ -1,4 +1,4 @@
-package org.molguin.acbreedinghelper.ui.mating;
+package org.molguin.islandgardener.ui.mating;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,11 +11,11 @@ import com.xwray.groupie.ExpandableGroup;
 import com.xwray.groupie.ExpandableItem;
 import com.xwray.groupie.viewbinding.BindableItem;
 
-import org.molguin.acbreedinghelper.R;
-import org.molguin.acbreedinghelper.databinding.OffspringProbCardBinding;
-import org.molguin.acbreedinghelper.databinding.VariantProbHolderBinding;
-import org.molguin.acbreedinghelper.flowers.FuzzyFlower;
-import org.molguin.acbreedinghelper.flowers.SpecificFlower;
+import org.molguin.islandgardener.R;
+import org.molguin.islandgardener.databinding.OffspringProbCardBinding;
+import org.molguin.islandgardener.databinding.VariantProbHolderBinding;
+import org.molguin.islandgardener.flowers.FuzzyFlower;
+import org.molguin.islandgardener.flowers.SpecificFlower;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -101,7 +101,7 @@ public class ExpandableFlowerGroup extends ExpandableGroup {
     }
 
 
-    private static class VariantItem extends BindableItem<org.molguin.acbreedinghelper.databinding.VariantProbHolderBinding> {
+    private static class VariantItem extends BindableItem<org.molguin.islandgardener.databinding.VariantProbHolderBinding> {
         // for subitems
         private final SpecificFlower flower;
         private final double probability;

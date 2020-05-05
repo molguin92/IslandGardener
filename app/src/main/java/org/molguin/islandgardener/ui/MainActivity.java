@@ -1,4 +1,4 @@
-package org.molguin.acbreedinghelper.ui;
+package org.molguin.islandgardener.ui;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -10,10 +10,10 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import org.molguin.acbreedinghelper.R;
-import org.molguin.acbreedinghelper.databinding.MainActivityBinding;
-import org.molguin.acbreedinghelper.flowers.FlowerCollection;
-import org.molguin.acbreedinghelper.model.MainActivityViewModel;
+import org.molguin.islandgardener.R;
+import org.molguin.islandgardener.databinding.MainActivityBinding;
+import org.molguin.islandgardener.flowers.FlowerCollection;
+import org.molguin.islandgardener.model.MainActivityViewModel;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;

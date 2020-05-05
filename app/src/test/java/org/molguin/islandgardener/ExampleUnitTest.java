@@ -1,4 +1,4 @@
-package org.molguin.acbreedinghelper;
+package org.molguin.islandgardener;
 
 import org.junit.Test;
 

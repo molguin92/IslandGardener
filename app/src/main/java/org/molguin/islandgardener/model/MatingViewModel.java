@@ -1,4 +1,4 @@
-package org.molguin.acbreedinghelper.model;
+package org.molguin.islandgardener.model;
 
 import android.util.Log;
 
@@ -6,14 +6,11 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import org.molguin.acbreedinghelper.flowers.FlowerCollection;
-import org.molguin.acbreedinghelper.flowers.FlowerConstants;
-import org.molguin.acbreedinghelper.flowers.FuzzyFlower;
-import org.molguin.acbreedinghelper.utils.Callback;
+import org.molguin.islandgardener.flowers.FlowerCollection;
+import org.molguin.islandgardener.flowers.FlowerConstants;
+import org.molguin.islandgardener.flowers.FuzzyFlower;
+import org.molguin.islandgardener.utils.Callback;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.concurrent.ExecutorService;
