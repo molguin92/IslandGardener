@@ -2,11 +2,15 @@ package org.molguin.acbreedinghelper.ui;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import org.molguin.acbreedinghelper.R;
 import org.molguin.acbreedinghelper.databinding.MainActivityBinding;
 import org.molguin.acbreedinghelper.flowers.FlowerCollection;
 import org.molguin.acbreedinghelper.model.MainActivityViewModel;
@@ -52,5 +56,22 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.about) {
+            Toast t = Toast.makeText(getApplicationContext(), "Testing info", Toast.LENGTH_LONG);
+            t.show();
+            return (true);
+        }
+        return (super.onOptionsItemSelected(item));
     }
 }
