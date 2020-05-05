@@ -57,7 +57,7 @@ public class ExpandableFlowerGroup extends ExpandableGroup {
         }
 
         @Override
-        public void bind(@NonNull OffspringProbCardBinding binding, int position) {
+        public void bind(@NonNull final OffspringProbCardBinding binding, int position) {
             // bind stuff here
             Context context = binding.viewholder.flowerIcon.getContext();
             binding.viewholder.flowerColor.setText(this.flower.getColor().name());
@@ -74,8 +74,12 @@ public class ExpandableFlowerGroup extends ExpandableGroup {
             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (eGroup != null)
+                    if (eGroup != null) {
                         eGroup.onToggleExpanded();
+                        binding.getRoot().setSelected(eGroup.isExpanded());
+                        //binding.viewholder.arrow.setImageResource(R.drawable.ic_arrow_drop_down_circle_black_24dp);
+                        //binding.viewholder.arrow.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
+                    }
                 }
             });
         }
