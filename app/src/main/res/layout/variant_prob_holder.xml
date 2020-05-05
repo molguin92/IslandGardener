@@ -1,6 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/flower_details"
     android:padding="16dp"
     android:paddingEnd="32dp"
     android:layout_width="match_parent"
@@ -9,8 +11,8 @@
 
     <ImageView
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/flower_color"
-        app:layout_constraintBottom_toBottomOf="@id/flower_variant_id"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:id="@+id/flower_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -18,40 +20,18 @@
         android:adjustViewBounds="true"
         android:cropToPadding="false"
         android:gravity="center_vertical"
-        android:maxHeight="55dp"
+        android:maxHeight="45dp"
         app:srcCompat="@drawable/cosmo_black" />
-
-    <!--    <TextView-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_gravity="center_vertical"-->
-    <!--        android:text="@string/genotype_heading"-->
-    <!--        android:textSize="24sp"-->
-    <!--        android:textStyle="normal" />-->
 
 
     <TextView
+        app:layout_constraintTop_toTopOf="@id/flower_icon"
         app:layout_constraintStart_toEndOf="@id/flower_icon"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/flower_variant_id"
-        android:id="@+id/flower_color"
+        app:layout_constraintBottom_toBottomOf="@id/flower_icon"
+        android:id="@+id/variants_heading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginStart="15dp"
-        android:layout_marginEnd="15dp"
-        android:text="@string/placeholder"
-        android:textSize="24sp"
-        android:textStyle="bold" />
-
-
-    <TextView
-        app:layout_constraintTop_toBottomOf="@id/flower_color"
-        app:layout_constraintStart_toStartOf="@id/flower_color"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:id="@+id/flower_variant_id"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:text="@string/placeholder"
         android:textSize="18sp"
         android:textStyle="italic" />
@@ -61,10 +41,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/placeholder_percent"
-        android:textSize="24sp"
-        android:textStyle="bold"
+        android:textSize="18sp"
+        android:textStyle="italic"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/flower_color"
+        app:layout_constraintBottom_toBottomOf="@id/variants_heading"
+        app:layout_constraintTop_toTopOf="@id/variants_heading"
 
         />
 

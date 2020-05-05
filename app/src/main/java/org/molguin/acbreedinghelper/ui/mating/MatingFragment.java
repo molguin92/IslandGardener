@@ -14,6 +14,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.xwray.groupie.GroupAdapter;
+
 import org.molguin.acbreedinghelper.databinding.MatingCalcLayoutBinding;
 import org.molguin.acbreedinghelper.flowers.FlowerConstants;
 import org.molguin.acbreedinghelper.flowers.FuzzyFlower;
@@ -65,8 +67,9 @@ public class MatingFragment extends Fragment {
         final Spinner p2spinner = this.binding.parent2Spinner;
         final RecyclerView resultview = this.binding.resultRecyclerView;
 
-        final VariantPercentageListAdapter recyclerViewAdapter = new VariantPercentageListAdapter();
-        resultview.setAdapter(recyclerViewAdapter);
+//        final VariantPercentageListAdapter recyclerViewAdapter = new VariantPercentageListAdapter();
+        final GroupAdapter adapter = new GroupAdapter();
+        resultview.setAdapter(adapter);
         resultview.setLayoutManager(new LinearLayoutManager(getContext()));
 
         cViewModel.dispatcher.setCallback(new Callback<Set<FuzzyFlower>, Void>() {
@@ -86,7 +89,9 @@ public class MatingFragment extends Fragment {
                 requireActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        recyclerViewAdapter.submitList(offspring_list);
+                        adapter.clear();
+                        for (FuzzyFlower offspring : offspring_list)
+                            adapter.add(new FuzzyFlowerSection(offspring));
                         resultview.smoothScrollToPosition(0);
                     }
                 });
