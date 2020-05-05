@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.molguin.acbreedinghelper.R;
+import org.molguin.acbreedinghelper.databinding.OffspringProbCardBinding;
 import org.molguin.acbreedinghelper.flowers.FuzzyFlower;
 
 public class VariantPercentageListAdapter extends ListAdapter<FuzzyFlower, VariantPercentageListAdapter.ViewHolder> {
@@ -24,8 +24,9 @@ public class VariantPercentageListAdapter extends ListAdapter<FuzzyFlower, Varia
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.offspring_prob_card, parent, false);
-        return new ViewHolder(view);
+        OffspringProbCardBinding binding = OffspringProbCardBinding.inflate(inflater);
+        View itemView = binding.getRoot();
+        return new ViewHolder(itemView, binding);
     }
 
     @Override
@@ -40,12 +41,13 @@ public class VariantPercentageListAdapter extends ListAdapter<FuzzyFlower, Varia
         final TextView percentView;
         final ImageView iconView;
 
-        ViewHolder(View v) {
+        ViewHolder(View v, OffspringProbCardBinding binding) {
             super(v);
-            this.colorView = v.findViewById(R.id.flower_color);
-            this.variantIdView = v.findViewById(R.id.flower_variant_id);
-            this.percentView = v.findViewById(R.id.variant_percent);
-            this.iconView = v.findViewById(R.id.flower_icon);
+
+            this.colorView = binding.viewholder.flowerColor;
+            this.variantIdView = binding.viewholder.flowerVariantId;
+            this.percentView = binding.viewholder.variantPercent;
+            this.iconView = binding.viewholder.flowerIcon;
         }
 
         void setFlower(FuzzyFlower flower) {

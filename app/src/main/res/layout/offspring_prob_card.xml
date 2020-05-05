@@ -5,6 +5,8 @@
     android:layout_margin="5dp"
     card_view:cardCornerRadius="4dp">
 
-    <include layout="@layout/offspring_prob_holder" />
+    <include
+        android:id="@+id/viewholder"
+        layout="@layout/offspring_prob_holder" />
 
 </androidx.cardview.widget.CardView>
