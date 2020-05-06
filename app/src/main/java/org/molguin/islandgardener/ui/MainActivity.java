@@ -2,6 +2,8 @@ package org.molguin.islandgardener.ui;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -91,16 +93,29 @@ public class MainActivity extends AppCompatActivity {
             AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
             LayoutInflater inflater = requireActivity().getLayoutInflater();
 
-            AboutDialogBinding binding = AboutDialogBinding.inflate(inflater, null, false);
-            builder.setView(binding.getRoot())
-                    .setTitle(R.string.app_name)
-                    .setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    })
-                    .setCancelable(false);
+            String app_name = this.requireActivity().getResources().getString(R.string.app_name);
+            try {
+                PackageInfo pInfo = this.requireActivity()
+                        .getPackageManager()
+                        .getPackageInfo(this.requireActivity().getPackageName(), 0);
+
+                String version = pInfo.versionName;
+                String title = String.format("%s v.%s", app_name, version);
+
+                AboutDialogBinding binding = AboutDialogBinding.inflate(inflater, null, false);
+                builder.setView(binding.getRoot())
+                        .setTitle(title)
+                        .setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .setCancelable(false);
+
+            } catch(PackageManager.NameNotFoundException e) {
+                Log.e("MyApp", "PackageManager Catch : ", e);
+            }
             return builder.create();
         }
 
