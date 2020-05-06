@@ -5,11 +5,13 @@ import android.content.res.AssetManager;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import org.molguin.islandgardener.flowers.FlowerCollection;
-import org.molguin.islandgardener.utils.Callback;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
@@ -21,14 +23,14 @@ import java.util.concurrent.locks.ReentrantLock;
 public class MainViewModel extends ViewModel {
     private final Lock lock;
     private final Condition loaded_cond;
+    private final MutableLiveData<Boolean> advancedMode;
     private FlowerCollection flowerCollection;
-    private boolean advancedMode;
 
     private MainViewModel(final AssetManager am,
                           final Context appContext,
                           final Runnable onLoadCallback) {
         super();
-        this.advancedMode = false;
+        this.advancedMode = new MutableLiveData<Boolean>(false);
         this.lock = new ReentrantLock();
         this.loaded_cond = this.lock.newCondition();
         this.flowerCollection = null;
@@ -49,17 +51,22 @@ public class MainViewModel extends ViewModel {
 
 
     public boolean isAdvancedMode() {
-        return this.advancedMode;
+        return this.advancedMode.getValue();
     }
 
     public void setAdvancedMode(boolean on) {
-        this.advancedMode = on;
+        this.advancedMode.postValue(on);
     }
 
     public boolean toggleAdvancedMode() {
-        this.advancedMode = !this.advancedMode;
-        return advancedMode;
+        this.advancedMode.postValue(!this.advancedMode.getValue());
+        return this.advancedMode.getValue();
     }
+
+    public void observeMode(LifecycleOwner lifecycleOwner, Observer<Boolean> observer) {
+        this.advancedMode.observe(lifecycleOwner, observer);
+    }
+
 
     public FlowerCollection getFlowerCollection() {
         this.lock.lock();
