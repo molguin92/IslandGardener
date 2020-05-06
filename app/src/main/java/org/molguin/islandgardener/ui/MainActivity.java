@@ -2,7 +2,9 @@ package org.molguin.islandgardener.ui;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -24,12 +26,24 @@ import org.molguin.islandgardener.databinding.MainActivityBinding;
 import org.molguin.islandgardener.model.MainViewModel;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String ADV_MODE_PREF_KEY = "ADVANCED_MODE_ON";
 
     MainViewModel viewModel;
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        SharedPreferences prefs = this.getPreferences(Context.MODE_PRIVATE);
+        prefs.edit().putBoolean(ADV_MODE_PREF_KEY, viewModel.isAdvancedMode()).apply();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // load preferences
+        SharedPreferences prefs = this.getPreferences(Context.MODE_PRIVATE);
+        boolean advMode = prefs.getBoolean(ADV_MODE_PREF_KEY, false);
 
         // load the bindings
         final MainActivityBinding binding = MainActivityBinding.inflate(getLayoutInflater());
@@ -64,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                 );
         this.viewModel = new ViewModelProvider(this, fact).get(MainViewModel.class);
+        this.viewModel.setAdvancedMode(advMode);
     }
 
     @SuppressLint("RestrictedApi")
