@@ -55,12 +55,13 @@ public class MainViewModel extends ViewModel {
     }
 
     public void setAdvancedMode(boolean on) {
-        this.advancedMode.postValue(on);
+        this.advancedMode.setValue(on);
     }
 
     public boolean toggleAdvancedMode() {
-        this.advancedMode.postValue(!this.advancedMode.getValue());
-        return this.advancedMode.getValue();
+        boolean newmode = !this.advancedMode.getValue();
+        this.advancedMode.setValue(newmode); // setValue sets value immediately, as opposed to postValue
+        return newmode;
     }
 
     public void observeMode(LifecycleOwner lifecycleOwner, Observer<Boolean> observer) {

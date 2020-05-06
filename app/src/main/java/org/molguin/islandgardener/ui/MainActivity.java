@@ -102,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void toggleAdvancedMode(MenuItem advancedModeToggle) {
         advancedModeToggle.setChecked(this.viewModel.toggleAdvancedMode());
-
     }
 
     public static class AboutDialog extends DialogFragment {

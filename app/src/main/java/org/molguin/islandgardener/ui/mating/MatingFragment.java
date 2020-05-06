@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -60,8 +61,6 @@ public class MatingFragment extends Fragment {
         final Spinner p1spinner = this.binding.parent1Spinner;
         final Spinner p2spinner = this.binding.parent2Spinner;
         final RecyclerView resultview = this.binding.resultRecyclerView;
-        final ProgressBar pbar = this.binding.loadingPbar;
-        final TextView loadText = this.binding.loadingText;
 
         final GroupAdapter adapter = new GroupAdapter();
         resultview.setAdapter(adapter);
@@ -84,9 +83,6 @@ public class MatingFragment extends Fragment {
                                     public void run() {
                                         p1spinner.setAdapter(adapter);
                                         p2spinner.setAdapter(adapter);
-
-                                        pbar.setVisibility(View.GONE);
-                                        loadText.setVisibility(View.GONE);
                                     }
                                 });
                         return null;
@@ -151,6 +147,12 @@ public class MatingFragment extends Fragment {
 
 
         // load data at the end
-        viewModel.loadData();
+        viewModel.loadData(mViewModel.isAdvancedMode());
+        mViewModel.observeMode(this.getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean advancedMode) {
+                viewModel.loadData(advancedMode);
+            }
+        });
     }
 }

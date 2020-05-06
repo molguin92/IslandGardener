@@ -44,20 +44,21 @@ public class MatingViewModel extends ViewModel {
         this.dispatcher.setMate1(mate);
     }
 
-    public void setMate2(FuzzyFlower mate){
+    public void setMate2(FuzzyFlower mate) {
         this.dispatcher.setMate2(mate);
     }
 
-    public void loadData() {
+    public void loadData(final boolean advancedMode) {
         // asynchronously load flowers
         final ExecutorService exec = Executors.newSingleThreadExecutor();
         exec.submit(new Runnable() {
             @Override
             public void run() {
                 SortedSet<FuzzyFlower> spinnerFlowers = flowerCollection.getAllFuzzyFlowersForSpecies(species);
-                spinnerFlowers.addAll(flowerCollection.getAllFlowersForSpecies(species));
+                if (advancedMode)
+                    spinnerFlowers.addAll(flowerCollection.getAllFlowersForSpecies(species));
                 onLoadCallback.apply(spinnerFlowers);
-                exec.shutdownNow();
+                exec.shutdown();
             }
         });
     }

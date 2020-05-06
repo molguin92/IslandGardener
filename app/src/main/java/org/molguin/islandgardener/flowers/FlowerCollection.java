@@ -173,9 +173,6 @@ public class FlowerCollection {
                 }
             }
 
-            for (Map.Entry<FlowerConstants.Color, FuzzyFlower> e : results.entrySet())
-                Log.d("Entries in results", String.format("%s: %s", e.getKey().name(), e.getValue().humanReadableVariants()));
-
             // return offspring ordered by descending probability
             SortedSet<FuzzyFlower> resultSet = new TreeSet<FuzzyFlower>(new Comparator<FuzzyFlower>() {
                 @Override
@@ -189,9 +186,6 @@ public class FlowerCollection {
             });
 
             resultSet.addAll(results.values());
-            for (FuzzyFlower r : resultSet)
-                Log.d("Entries in resultSet", String.format("%s: %s", r.getColor().name(), r.humanReadableVariants()));
-
             return resultSet;
         }
     }
