@@ -22,7 +22,7 @@ import com.xwray.groupie.GroupAdapter;
 import org.molguin.islandgardener.databinding.MatingCalcLayoutBinding;
 import org.molguin.islandgardener.flowers.FlowerConstants;
 import org.molguin.islandgardener.flowers.FuzzyFlower;
-import org.molguin.islandgardener.model.MainActivityViewModel;
+import org.molguin.islandgardener.model.MainViewModel;
 import org.molguin.islandgardener.model.MatingViewModel;
 import org.molguin.islandgardener.utils.Callback;
 
@@ -61,7 +61,7 @@ public class MatingFragment extends Fragment {
         final FlowerConstants.Species species =
                 FlowerConstants.Species.values()[args.getInt(MatingFragment.ARG_SPECIES_ORDINAL)];
 
-        MainActivityViewModel mViewModel = new ViewModelProvider(this.getActivity()).get(MainActivityViewModel.class);
+        MainViewModel mViewModel = new ViewModelProvider(this.getActivity()).get(MainViewModel.class);
         MatingViewModel.Factory factory = new MatingViewModel.Factory(mViewModel.getFlowerCollection(), species);
         final MatingViewModel viewModel = new ViewModelProvider(this, factory).get(MatingViewModel.class);
 
