@@ -13,7 +13,7 @@ TODO
 
 ### Manual
 
-Download the latest APK from [releases][releases] and save it to the internal storage of your phone.
+Download the latest APK from [releases](releases) and save it to the internal storage of your phone.
 Then, using a file manager application, browse to the APK file location and install it.
 
 ## Release History
@@ -22,9 +22,9 @@ Then, using a file manager application, browse to the APK file location and inst
 
 ## Meta
 
-Manuel Olguín Muñoz – [@YourTwitter](https://twitter.com/molguin92) – manuel@olguin.se
+Manuel Olguín Muñoz – [@molguin92](https://twitter.com/molguin92) – manuel@olguin.se
 
-Distributed under the GPLv3.0 license. See [LICENSE][LICENSE] for more information.
+Distributed under the GPLv3.0 license. See [LICENSE](LICENSE) for more information.
 
 ## Contributing
 
