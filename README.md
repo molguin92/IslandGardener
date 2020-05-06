@@ -4,11 +4,7 @@
 Island Gardener simplifies flower breeding in Animal Crossing: New Horizons by providing you with all the information you need about crossbreeding.
 It allows you to optimally choose which flowers to plant together in other to maximize the odds of getting that sweet rare hybrid you're missing.
 
-![](./screenshots/1.png)
-![](./screenshots/2.png)
-![](./screenshots/3.png)
-![](./screenshots/4.png)
-
+![](./screenshots/header.png)
 ## Installation
 
 ### Play Store (Recommended)
