@@ -2,7 +2,6 @@ package org.molguin.islandgardener.model;
 
 import android.content.Context;
 import android.content.res.AssetManager;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LifecycleOwner;
@@ -42,8 +41,8 @@ public class MainViewModel extends ViewModel {
                 try {
                     MainViewModel.this.setFlowerCollection(new FlowerCollection(am, appContext));
                     onLoadCallback.run();
-                } catch (IOException e) {
-                    Log.e("Loading", "Failed to load flower data.");
+                } catch (IOException ignored) {
+                    //Log.e("Loading", "Failed to load flower data.");
                 }
             }
         });
@@ -75,8 +74,8 @@ public class MainViewModel extends ViewModel {
             while (this.flowerCollection == null) {
                 try {
                     this.loaded_cond.await();
-                } catch (InterruptedException e) {
-                    Log.w("MainViewModel", "Interrupted while trying to get FlowerCollection", e);
+                } catch (InterruptedException ignored) {
+                    //Log.w("MainViewModel", "Interrupted while trying to get FlowerCollection", e);
                 }
             }
             return this.flowerCollection;

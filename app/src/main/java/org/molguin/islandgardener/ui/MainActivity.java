@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -145,8 +144,8 @@ public class MainActivity extends AppCompatActivity {
                         })
                         .setCancelable(false);
 
-            } catch (PackageManager.NameNotFoundException e) {
-                Log.e("MyApp", "PackageManager Catch : ", e);
+            } catch (PackageManager.NameNotFoundException ignored) {
+//                Log.e("MyApp", "PackageManager Catch : ", e);
             }
             return builder.create();
         }

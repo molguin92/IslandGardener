@@ -1,7 +1,5 @@
 package org.molguin.islandgardener.model;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
@@ -128,8 +126,8 @@ public class MatingViewModel extends ViewModel {
                             matingCallback.apply(all_offspring);
                             matesChanged = false;
 
-                        } catch (Exception e) {
-                            Log.e("Error", "Error mating flowers.", e);
+                        } catch (Exception ignored) {
+                            //Log.e("Error", "Error mating flowers.", e);
                             return;
                         } finally {
                             lock.unlock();
