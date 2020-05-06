@@ -173,15 +173,25 @@ public class FlowerCollection {
                 }
             }
 
+            for (Map.Entry<FlowerConstants.Color, FuzzyFlower> e : results.entrySet())
+                Log.d("Entries in results", String.format("%s: %s", e.getKey().name(), e.getValue().humanReadableVariants()));
+
             // return offspring ordered by descending probability
             SortedSet<FuzzyFlower> resultSet = new TreeSet<FuzzyFlower>(new Comparator<FuzzyFlower>() {
                 @Override
                 public int compare(FuzzyFlower f1, FuzzyFlower f2) {
-                    return Double.compare(f2.getTotalProbability(), f1.getTotalProbability());
+                    // if F1 and F2 have exactly the same probability, we need to compare them based on their hashcodes
+                    int prob_comp = Double.compare(f2.getTotalProbability(), f1.getTotalProbability());
+                    if (prob_comp == 0)
+                        return Integer.compare(f1.hashCode(), f2.hashCode());
+                    else return prob_comp;
                 }
             });
 
             resultSet.addAll(results.values());
+            for (FuzzyFlower r : resultSet)
+                Log.d("Entries in resultSet", String.format("%s: %s", r.getColor().name(), r.humanReadableVariants()));
+
             return resultSet;
         }
     }

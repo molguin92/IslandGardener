@@ -78,7 +78,7 @@ public class MatingFragment extends Fragment {
                     public Void apply(SortedSet<FuzzyFlower> flowers) {
                         final MatingSpinnerAdapter adapter = new MatingSpinnerAdapter(flowers);
                         MatingFragment.this
-                                .getActivity()
+                                .requireActivity()
                                 .runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {

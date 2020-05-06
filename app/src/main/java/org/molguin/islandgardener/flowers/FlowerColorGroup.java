@@ -1,5 +1,7 @@
 package org.molguin.islandgardener.flowers;
 
+import android.util.Log;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -26,7 +28,7 @@ public class FlowerColorGroup extends AbstractFuzzyFlower {
 
     @Override
     public int hashCode() {
-        return (this.species.ordinal() * 100) + (this.color.ordinal() * 10) + this.variants.size();
+        return (this.species.ordinal()) * 100 + this.color.ordinal();
     }
 
     @Override
