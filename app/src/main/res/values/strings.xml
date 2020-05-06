@@ -31,9 +31,22 @@ GNU General Public License for more details.\n
 You should have received a copy of the GNU General Public License
 along with this program. If not, see https://www.gnu.org/licenses/.
     </string>
-    <string name="icon_license">
+    <string name="app_icon_license">
 Island Gardener Icon by Paola Olguín Muñoz is licensed under CC BY-SA 4.0.\n
 To view a copy of this license, visit https://creativecommons.org/licenses/by-sa/4.0
+    </string>
+    <string name="icon_attribution">
+In-app icons have been obtained under CC-BY Licenses 2.0 from the Noun Project https://thenounproject.com/\n
+\n
+Attributions\n
+Hyacinth: Lavender by Phạm Thanh Lộc\n
+Cosmo: Flower by Andi Nur Abdillah\n
+Tulip: Tulip by Kevin Kwok\n
+Lily: lily by dDara\n
+Mum: Chrysanthemum by emilegraphics\n
+Pansy: Pansy by Phạm Thanh Lộc\n
+Rose: Rose by kareemovic\n
+Windflower: anemone by Flatart
     </string>
     <string name="advanced_mode">Advanced Mode</string>
 </resources>
