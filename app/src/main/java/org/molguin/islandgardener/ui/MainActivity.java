@@ -1,16 +1,22 @@
 package org.molguin.islandgardener.ui;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import org.molguin.islandgardener.R;
+import org.molguin.islandgardener.databinding.AboutDialogBinding;
 import org.molguin.islandgardener.databinding.MainActivityBinding;
 import org.molguin.islandgardener.flowers.FlowerCollection;
 import org.molguin.islandgardener.model.MainActivityViewModel;
@@ -68,14 +74,35 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.about) {
-            Toast t = Toast.makeText(getApplicationContext(), "Testing info", Toast.LENGTH_LONG);
-            t.show();
+            this.showAboutDialog();
             return (true);
         }
         return (super.onOptionsItemSelected(item));
     }
 
     private void showAboutDialog() {
+        DialogFragment aboutDialog = new AboutDialog();
+        aboutDialog.show(getSupportFragmentManager(), "about");
+    }
+
+    public static class AboutDialog extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
+            LayoutInflater inflater = requireActivity().getLayoutInflater();
+
+            AboutDialogBinding binding = AboutDialogBinding.inflate(inflater, null, false);
+            builder.setView(binding.getRoot())
+                    .setTitle(R.string.app_name)
+                    .setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .setCancelable(false);
+            return builder.create();
+        }
 
     }
 }
