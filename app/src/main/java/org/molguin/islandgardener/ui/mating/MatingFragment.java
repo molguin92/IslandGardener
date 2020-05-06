@@ -5,9 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -68,6 +66,7 @@ public class MatingFragment extends Fragment {
 
         final FlowerConstants.Species species =
                 FlowerConstants.Species.values()[args.getInt(MatingFragment.ARG_SPECIES_ORDINAL)];
+        final MainViewModel mViewModel = new ViewModelProvider(this.requireActivity()).get(MainViewModel.class);
 
         // prepare callback to pass to the viewmodel
         // this callback is called when the data for the spinners is loaded
@@ -96,8 +95,13 @@ public class MatingFragment extends Fragment {
                     public Void apply(SortedSet<FuzzyFlower> offspring) {
                         // prepare groups in background thread
                         final List<Group> groups = new ArrayList<Group>();
-                        for (FuzzyFlower flower : offspring)
-                            groups.add(new ExpandableFlowerGroup(flower));
+                        if (mViewModel.isAdvancedMode()) {
+                            for (FuzzyFlower flower : offspring)
+                                groups.add(new ExpandableFlowerGroup(flower));
+                        } else {
+                            for (FuzzyFlower flower : offspring)
+                                groups.add(new SimpleFlowerItem(flower));
+                        }
 
                         requireActivity().runOnUiThread(new Runnable() {
                             @Override
@@ -111,8 +115,6 @@ public class MatingFragment extends Fragment {
                     }
                 };
 
-
-        MainViewModel mViewModel = new ViewModelProvider(this.requireActivity()).get(MainViewModel.class);
         MatingViewModel.Factory factory =
                 new MatingViewModel.Factory(
                         mViewModel.getFlowerCollection(),
