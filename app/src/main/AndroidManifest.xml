@@ -10,7 +10,9 @@
         android:roundIcon="@mipmap/ic_icon_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="org.molguin.islandgardener.ui.MainActivity">
+        <activity
+            android:name="org.molguin.islandgardener.ui.MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
