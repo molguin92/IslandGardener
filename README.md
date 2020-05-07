@@ -8,7 +8,7 @@ It allows you to optimally choose which flowers to plant together in other to ma
 ## Installation
 
 ### Play Store (Recommended)
-TODO
+*Coming soon!*
 
 ### Manual
 
