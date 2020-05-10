@@ -8,7 +8,7 @@ It allows you to optimally choose which flowers to plant together in other to ma
 ## Installation
 
 ### Play Store (Recommended)
-https://play.google.com/store/apps/details?id=org.molguin.islandgardener
+Got to: https://play.google.com/store/apps/details?id=org.molguin.islandgardener or search for "Island Gardener" on the Google Play Store, and enjoy.
 
 ### Manual
 
