@@ -23,7 +23,7 @@ It allows you to optimally choose which flowers to plant together in other to ma
 
 ## Meta
 
-Manuel Olguín Muñoz – [@molguin92](https://twitter.com/molguin92) – manuel@olguin.se
+Reach me on Twitter: [@molguin92](https://twitter.com/molguin92).
 
 Distributed under the GPLv3.0 license. See [LICENSE](LICENSE) for more information.
 
