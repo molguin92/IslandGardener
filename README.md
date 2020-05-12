@@ -19,6 +19,7 @@ It allows you to optimally choose which flowers to plant together in other to ma
 
 ## Release History
 
+* 0.4.0beta Add toggle to change between normal W gene mode (ww = 00, WW = 11) and inverse W gene mode (WW = 00, ww = 11), to match diverse online breeding guides.
 * 0.3.0beta Initial release.
 
 ## Meta
