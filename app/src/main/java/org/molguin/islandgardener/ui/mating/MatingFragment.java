@@ -34,6 +34,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.xwray.groupie.Group;
+import com.xwray.groupie.GroupAdapter;
+
 import org.molguin.islandgardener.databinding.MatingCalcLayoutBinding;
 import org.molguin.islandgardener.flowers.FlowerColorGroup;
 import org.molguin.islandgardener.flowers.FlowerConstants;
@@ -43,14 +46,17 @@ import org.molguin.islandgardener.model.MainViewModel;
 import org.molguin.islandgardener.model.MatingViewModel;
 import org.molguin.islandgardener.utils.Callback;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.SortedSet;
 
 public class MatingFragment extends Fragment implements MatingViewModel.dataLoadedCallback, MatingViewModel.matesCalculatedCallback {
     public static final String ARG_SPECIES_ORDINAL = "species";
     private MatingCalcLayoutBinding binding;
-    private MatingSpinnerAdapter adapter;
-    private MatingGroupWrapper wrapper;
+    private MatingSpinnerAdapter spinnerAdapter;
+    private GroupAdapter groupAdapter;
+    private MainViewModel mViewModel;
 
 
     public MatingFragment() {
@@ -77,19 +83,18 @@ public class MatingFragment extends Fragment implements MatingViewModel.dataLoad
 
         final FlowerConstants.Species species =
                 FlowerConstants.Species.values()[args.getInt(MatingFragment.ARG_SPECIES_ORDINAL)];
-        final MainViewModel mViewModel = new ViewModelProvider(this.requireActivity()).get(MainViewModel.class);
+        this.mViewModel = new ViewModelProvider(this.requireActivity()).get(MainViewModel.class);
 
         final Spinner p1spinner = this.binding.parent1Spinner;
         final Spinner p2spinner = this.binding.parent2Spinner;
         final RecyclerView resultview = this.binding.resultRecyclerView;
-        this.adapter = new MatingSpinnerAdapter();
-        p1spinner.setAdapter(this.adapter);
-        p2spinner.setAdapter(this.adapter);
+        this.spinnerAdapter = new MatingSpinnerAdapter();
+        this.groupAdapter = new GroupAdapter();
 
-        this.wrapper =
-                new MatingGroupWrapper(mViewModel.isAdvancedMode(),
-                        mViewModel.iswGeneInvMode());
-        resultview.setAdapter(wrapper.getAdapter());
+
+        p1spinner.setAdapter(this.spinnerAdapter);
+        p2spinner.setAdapter(this.spinnerAdapter);
+        resultview.setAdapter(this.groupAdapter);
         resultview.setLayoutManager(new LinearLayoutManager(getContext()));
 
 
@@ -155,18 +160,24 @@ public class MatingFragment extends Fragment implements MatingViewModel.dataLoad
         mViewModel.observeAdvancedMode(this.getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean advancedMode) {
-                wrapper.setAdvancedMode(advancedMode);
+                for (int i = 0; i < groupAdapter.getGroupCount(); i++) {
+                    ExpandableFlowerGroup g = (ExpandableFlowerGroup) groupAdapter.getTopLevelGroup(i);
+                    g.setAdvancedMode(advancedMode);
+                }
                 // spinner adapter
-                adapter.setAdvancedMode(advancedMode);
+                spinnerAdapter.setAdvancedMode(advancedMode);
             }
         });
 
         mViewModel.observeWGeneInvMode(this.getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean invWGeneMode) {
-                wrapper.setInvWGeneMode(invWGeneMode);
+                for (int i = 0; i < groupAdapter.getGroupCount(); i++) {
+                    ExpandableFlowerGroup g = (ExpandableFlowerGroup) groupAdapter.getTopLevelGroup(i);
+                    g.setInvWGeneMode(invWGeneMode);
+                }
                 //spinner adapter
-                adapter.setInvWGeneMode(invWGeneMode);
+                spinnerAdapter.setInvWGeneMode(invWGeneMode);
             }
         });
     }
@@ -178,7 +189,7 @@ public class MatingFragment extends Fragment implements MatingViewModel.dataLoad
                         new Runnable() {
                             @Override
                             public void run() {
-                                adapter.setGroupsAndFlowers(groups, flowers);
+                                spinnerAdapter.setGroupsAndFlowers(groups, flowers);
                             }
                         }
                 );
@@ -190,7 +201,11 @@ public class MatingFragment extends Fragment implements MatingViewModel.dataLoad
                 .runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        wrapper.setFlowers(flowers);
+                        List<Group> newGroups = new ArrayList<Group>(flowers.size());
+                        for (FuzzyFlower f : flowers)
+                            newGroups.add(new ExpandableFlowerGroup(f, mViewModel.isAdvancedMode(), mViewModel.iswGeneInvMode()));
+
+                        groupAdapter.updateAsync(newGroups);
                     }
                 });
     }

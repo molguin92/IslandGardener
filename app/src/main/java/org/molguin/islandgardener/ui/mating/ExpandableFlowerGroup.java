@@ -44,9 +44,15 @@ import java.util.Map;
 
 public class ExpandableFlowerGroup extends ExpandableGroup {
     private final FuzzyFlower flower;
+    private final HeaderItem header;
+    private final List<VariantItem> items;
 
-    public ExpandableFlowerGroup(FuzzyFlower flower, boolean invWGene) {
-        super(new HeaderItem(flower), false);
+    public ExpandableFlowerGroup(FuzzyFlower flower, boolean advancedMode, boolean invWGene) {
+        super(new HeaderItem(flower, advancedMode), false);
+
+        this.header = (HeaderItem) this.getGroup(0);
+        this.items = new ArrayList<VariantItem>(flower.getVariantProbs().size());
+
         this.flower = flower;
         List<Map.Entry<SpecificFlower, Double>> entries = new ArrayList<Map.Entry<SpecificFlower, Double>>(this.flower.getVariantProbs().entrySet());
         Collections.sort(entries, new Comparator<Map.Entry<SpecificFlower, Double>>() {
@@ -56,17 +62,40 @@ public class ExpandableFlowerGroup extends ExpandableGroup {
             }
         });
 
-        for (Map.Entry<SpecificFlower, Double> e : entries)
-            this.add(new VariantItem(e, invWGene));
+        for (Map.Entry<SpecificFlower, Double> e : entries) {
+            VariantItem item = new VariantItem(e, invWGene);
+            this.items.add(item);
+            this.add(item);
+        }
+    }
+
+    public void setAdvancedMode(boolean on) {
+        this.setExpanded(false);
+        this.header.setAdvancedMode(on);
+        this.notifyItemChanged(0);
+    }
+
+    public void setInvWGeneMode(boolean on) {
+        for (VariantItem item : this.items)
+            item.setInvWGene(on);
+        this.notifyItemRangeChanged(1, this.items.size());
     }
 
     private static class HeaderItem extends BindableItem<OffspringProbCardBinding> implements ExpandableItem {
 
         private final FuzzyFlower flower;
         private ExpandableGroup eGroup;
+        private boolean advancedMode;
 
-        HeaderItem(FuzzyFlower headerFlower) {
+        HeaderItem(FuzzyFlower headerFlower, boolean advancedMode) {
+            this.advancedMode = advancedMode;
             this.flower = headerFlower;
+        }
+
+        void setAdvancedMode(boolean on) {
+            if (this.advancedMode == on) return;
+            this.advancedMode = on;
+            this.notifyChanged();
         }
 
         @NonNull
@@ -91,21 +120,30 @@ public class ExpandableFlowerGroup extends ExpandableGroup {
             binding.viewholder.flowerVariantId.setText(String.format(fmt_string, flower.getVariantProbs().size()));
             binding.viewholder.arrow.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
 
-            binding.getRoot().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (eGroup != null) {
-                        eGroup.onToggleExpanded();
-                        boolean expanded = eGroup.isExpanded();
-                        binding.getRoot().setSelected(expanded);
+            if (this.advancedMode) {
+                binding.getRoot().setClickable(true);
+                binding.viewholder.arrow.setVisibility(View.VISIBLE);
+                binding.getRoot().setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (eGroup != null) {
+                            eGroup.onToggleExpanded();
+                            boolean expanded = eGroup.isExpanded();
+                            binding.getRoot().setSelected(expanded);
 
-                        if (expanded)
-                            binding.viewholder.arrow.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
-                        else
-                            binding.viewholder.arrow.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
+                            if (expanded)
+                                binding.viewholder.arrow.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
+                            else
+                                binding.viewholder.arrow.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
+                        }
                     }
-                }
-            });
+                });
+            } else {
+                binding.getRoot().setClickable(false);
+                binding.viewholder.arrow.setVisibility(View.INVISIBLE);
+                binding.getRoot().setOnClickListener(null);
+            }
+
         }
 
         @Override
@@ -124,12 +162,18 @@ public class ExpandableFlowerGroup extends ExpandableGroup {
         // for subitems
         private final SpecificFlower flower;
         private final double probability;
-        private final boolean invWGene;
+        private boolean invWGene;
 
         VariantItem(Map.Entry<SpecificFlower, Double> entry, boolean invWGene) {
             this.flower = entry.getKey();
             this.probability = entry.getValue();
             this.invWGene = invWGene;
+        }
+
+        void setInvWGene(boolean on) {
+            if (on == this.invWGene) return;
+            this.invWGene = on;
+            this.notifyChanged();
         }
 
         @NonNull
