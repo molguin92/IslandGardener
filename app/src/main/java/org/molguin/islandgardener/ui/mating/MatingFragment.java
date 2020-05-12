@@ -44,12 +44,10 @@ import org.molguin.islandgardener.flowers.FuzzyFlower;
 import org.molguin.islandgardener.flowers.SpecificFlower;
 import org.molguin.islandgardener.model.MainViewModel;
 import org.molguin.islandgardener.model.MatingViewModel;
-import org.molguin.islandgardener.utils.Callback;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.SortedSet;
 
 public class MatingFragment extends Fragment implements MatingViewModel.dataLoadedCallback, MatingViewModel.matesCalculatedCallback {
     public static final String ARG_SPECIES_ORDINAL = "species";
@@ -97,33 +95,6 @@ public class MatingFragment extends Fragment implements MatingViewModel.dataLoad
         resultview.setAdapter(this.groupAdapter);
         resultview.setLayoutManager(new LinearLayoutManager(getContext()));
 
-
-        // this callback is called whenever new offspring are calculated
-        Callback<SortedSet<FuzzyFlower>, Void> offspringCallback =
-                new Callback<SortedSet<FuzzyFlower>, Void>() {
-                    @Override
-                    public Void apply(SortedSet<FuzzyFlower> offspring) {
-                        // prepare groups in background thread
-//                        final List<Group> groups = new ArrayList<Group>();
-//                        if (mViewModel.isAdvancedMode()) {
-//                            for (FuzzyFlower flower : offspring)
-//                                groups.add(new ExpandableFlowerGroup(flower, mViewModel.iswGeneInvMode()));
-//                        } else {
-//                            for (FuzzyFlower flower : offspring)
-//                                groups.add(new SimpleFlowerItem(flower));
-//                        }
-//                        requireActivity().runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                adapter.clear();
-//                                adapter.addAll(groups);
-//                                resultview.smoothScrollToPosition(0);
-//                            }
-//                        });
-
-                        return null;
-                    }
-                };
 
         MatingViewModel.Factory factory =
                 new MatingViewModel.Factory(
