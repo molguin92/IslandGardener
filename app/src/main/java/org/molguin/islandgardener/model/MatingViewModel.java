@@ -24,10 +24,12 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import org.molguin.islandgardener.flowers.FlowerCollection;
+import org.molguin.islandgardener.flowers.FlowerColorGroup;
 import org.molguin.islandgardener.flowers.FlowerConstants;
 import org.molguin.islandgardener.flowers.FuzzyFlower;
-import org.molguin.islandgardener.utils.Callback;
+import org.molguin.islandgardener.flowers.SpecificFlower;
 
+import java.util.Collection;
 import java.util.SortedSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -36,18 +38,15 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class MatingViewModel extends ViewModel {
-    final Callback<SortedSet<FuzzyFlower>, Void> onLoadCallback;
     final private FlowerCollection flowerCollection;
     final private FlowerConstants.Species species;
     final private FuzzyFlowerMatingDispatcher dispatcher;
 
     public MatingViewModel(final FlowerCollection flowerCollection,
                            final FlowerConstants.Species species,
-                           final Callback<SortedSet<FuzzyFlower>, Void> onLoadCallback,
-                           final Callback<SortedSet<FuzzyFlower>, Void> matingCallback) {
+                           final matesCalculatedCallback matingCallback) {
         this.flowerCollection = flowerCollection;
         this.species = species;
-        this.onLoadCallback = onLoadCallback;
         this.dispatcher = new FuzzyFlowerMatingDispatcher(matingCallback);
     }
 
@@ -65,43 +64,47 @@ public class MatingViewModel extends ViewModel {
         this.dispatcher.setMate2(mate);
     }
 
-    public void loadData(final boolean advancedMode) {
+    public void loadData(final dataLoadedCallback callback) {
         // asynchronously load flowers
         final ExecutorService exec = Executors.newSingleThreadExecutor();
         exec.submit(new Runnable() {
             @Override
             public void run() {
-                SortedSet<FuzzyFlower> spinnerFlowers = flowerCollection.getAllFuzzyFlowersForSpecies(species);
-                if (advancedMode)
-                    spinnerFlowers.addAll(flowerCollection.getAllFlowersForSpecies(species));
-                onLoadCallback.apply(spinnerFlowers);
+                SortedSet<FlowerColorGroup> spinnerGroups = flowerCollection.getAllColorGroupsForSpecies(species);
+                SortedSet<SpecificFlower> spinnerFlowers = flowerCollection.getAllFlowersForSpecies(species);
+                callback.onDataLoaded(spinnerGroups, spinnerFlowers);
                 exec.shutdown();
             }
         });
+    }
+
+    public interface dataLoadedCallback {
+        void onDataLoaded(Collection<FlowerColorGroup> groups, Collection<SpecificFlower> flowers);
+    }
+
+    public interface matesCalculatedCallback {
+        void onMatesCalculated(Collection<FuzzyFlower> flowers);
     }
 
     public static class Factory implements ViewModelProvider.Factory {
 
         private final FlowerCollection db;
         private final FlowerConstants.Species species;
-        private final Callback<SortedSet<FuzzyFlower>, Void> onLoadCallback;
-        private final Callback<SortedSet<FuzzyFlower>, Void> matingCallback;
+        private final matesCalculatedCallback matingCallback;
 
         public Factory(FlowerCollection db,
                        FlowerConstants.Species species,
-                       Callback<SortedSet<FuzzyFlower>, Void> onLoadCallback,
-                       Callback<SortedSet<FuzzyFlower>, Void> matingCallback) {
+                       matesCalculatedCallback matesCalculatedCallback) {
             this.db = db;
             this.species = species;
-            this.onLoadCallback = onLoadCallback;
-            this.matingCallback = matingCallback;
+            this.matingCallback = matesCalculatedCallback;
         }
 
         @NonNull
         @Override
         public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
             if (modelClass.isAssignableFrom(MatingViewModel.class)) {
-                return (T) new MatingViewModel(this.db, this.species, this.onLoadCallback, this.matingCallback);
+                return (T) new MatingViewModel(this.db, this.species, this.matingCallback);
             }
             throw new IllegalArgumentException("Unknown ViewModel class");
         }
@@ -117,7 +120,7 @@ public class MatingViewModel extends ViewModel {
         private FuzzyFlower mate1;
         private FuzzyFlower mate2;
 
-        FuzzyFlowerMatingDispatcher(final @NonNull Callback<SortedSet<FuzzyFlower>, Void> matingCallback) {
+        FuzzyFlowerMatingDispatcher(final @NonNull matesCalculatedCallback matingCallback) {
             this.lock = new ReentrantLock();
             this.cond = this.lock.newCondition();
             this.matesChanged = false;
@@ -142,7 +145,7 @@ public class MatingViewModel extends ViewModel {
                             }
 
                             SortedSet<FuzzyFlower> all_offspring = flowerCollection.getAllOffspring(mate1, mate2);
-                            matingCallback.apply(all_offspring);
+                            matingCallback.onMatesCalculated(all_offspring);
                             matesChanged = false;
 
                         } catch (Exception ignored) {

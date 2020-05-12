@@ -29,33 +29,79 @@ import android.widget.TextView;
 
 import org.molguin.islandgardener.R;
 import org.molguin.islandgardener.databinding.ColorHolderBinding;
+import org.molguin.islandgardener.flowers.FlowerColorGroup;
 import org.molguin.islandgardener.flowers.FuzzyFlower;
+import org.molguin.islandgardener.flowers.SpecificFlower;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 public class MatingSpinnerAdapter extends BaseAdapter {
-    final List<FuzzyFlower> flowers;
+    final List<FlowerColorGroup> groups;
+    final List<SpecificFlower> flowers;
 
-    MatingSpinnerAdapter(Collection<FuzzyFlower> flowers) {
-        this.flowers = new ArrayList<FuzzyFlower>(flowers);
+    boolean advancedMode;
+    boolean invWGeneMode;
+
+    MatingSpinnerAdapter() {
+        this.groups = new ArrayList<FlowerColorGroup>();
+        this.flowers = new ArrayList<SpecificFlower>();
+
+        this.advancedMode = false;
+        this.invWGeneMode = false;
+    }
+
+    public void setGroupsAndFlowers(final Collection<FlowerColorGroup> groups, final Collection<SpecificFlower> flowers) {
+        this.groups.clear();
+        this.flowers.clear();
+        this.groups.addAll(groups);
+        this.flowers.addAll(flowers);
+        this.notifyDataSetChanged();
+    }
+
+    public void setGroups(Collection<FlowerColorGroup> groups) {
+        this.groups.clear();
+        this.groups.addAll(groups);
+        this.notifyDataSetChanged();
+    }
+
+    public void setFlowers(Collection<SpecificFlower> flowers) {
+        this.flowers.clear();
+        this.flowers.addAll(flowers);
+        this.notifyDataSetChanged();
+    }
+
+    public void setAdvancedMode(boolean on) {
+        if (on == this.advancedMode) return;
+        this.advancedMode = on;
+        this.notifyDataSetChanged();
+    }
+
+    public void setInvWGeneMode(boolean on) {
+        if (on == this.invWGeneMode) return;
+        this.invWGeneMode = on;
+        this.notifyDataSetChanged();
     }
 
 
     @Override
     public int getCount() {
-        return this.flowers.size();
+        return this.advancedMode ? this.groups.size() + this.flowers.size() : this.groups.size();
     }
 
     @Override
     public FuzzyFlower getItem(int position) {
-        return this.flowers.get(position);
+        int gps = this.groups.size();
+        if (position < gps)
+            return this.groups.get(position);
+        else
+            return this.flowers.get(position - gps);
     }
 
     @Override
     public long getItemId(int position) {
-        return this.flowers.hashCode();
+        return this.getItem(position).hashCode();
     }
 
     @Override
@@ -69,8 +115,11 @@ public class MatingSpinnerAdapter extends BaseAdapter {
             vh = (ViewHolder) convertView.getTag();
 
 
-        FuzzyFlower f = this.flowers.get(position);
-        vh.bind(f);
+        int gps = this.groups.size();
+        if (position < gps)
+            vh.bind(this.groups.get(position));
+        else
+            vh.bind(this.flowers.get(position - gps), this.invWGeneMode);
         return vh.rootView;
     }
 
@@ -94,16 +143,14 @@ public class MatingSpinnerAdapter extends BaseAdapter {
                     .getString(R.string.variants_fmt_string);
         }
 
-        void bind(FuzzyFlower f) {
-            this.colorview.setText(f.getColor().name());
-            if (!f.isGroup()) {
-                this.colorview.setTypeface(null, Typeface.NORMAL);
-                this.variantsView.setText(f.humanReadableVariants());
-            } else {
-                this.variantsView.setText(
-                        String.format(this.variants_fmt_string, f.getVariantProbs().size()));
-            }
+        void bind(SpecificFlower f, boolean invWGene) {
+            this.colorview.setTypeface(null, Typeface.NORMAL);
+            this.variantsView.setText(f.humanReadableVariants(invWGene));
+            this.bindFuzzy(f);
+        }
 
+        private void bindFuzzy(FuzzyFlower f) {
+            this.colorview.setText(f.getColor().name());
             int icon_id = this.rootView.getContext()
                     .getResources()
                     .getIdentifier(f.getIconName(),
@@ -111,6 +158,12 @@ public class MatingSpinnerAdapter extends BaseAdapter {
                             this.rootView.getContext().getPackageName());
 
             iconView.setImageResource(icon_id);
+        }
+
+        void bind(FlowerColorGroup f) {
+            this.variantsView.setText(
+                    String.format(this.variants_fmt_string, f.getVariantProbs().size()));
+            this.bindFuzzy(f);
         }
 
     }

@@ -45,6 +45,7 @@ import org.molguin.islandgardener.model.MainViewModel;
 
 public class MainActivity extends AppCompatActivity {
     private static final String ADV_MODE_PREF_KEY = "ADVANCED_MODE_ON";
+    private static final String WGENE_MODE_PREF_KEY = "WGENE_MODE_INV";
 
     MainViewModel viewModel;
 
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         SharedPreferences prefs = this.getPreferences(Context.MODE_PRIVATE);
         prefs.edit().putBoolean(ADV_MODE_PREF_KEY, viewModel.isAdvancedMode()).apply();
+        prefs.edit().putBoolean(WGENE_MODE_PREF_KEY, viewModel.iswGeneInvMode()).apply();
     }
 
     @Override
@@ -62,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         // load preferences
         SharedPreferences prefs = this.getPreferences(Context.MODE_PRIVATE);
         boolean advMode = prefs.getBoolean(ADV_MODE_PREF_KEY, false);
+        boolean wGeneMode = prefs.getBoolean(WGENE_MODE_PREF_KEY, false);
 
         // load the bindings
         final MainActivityBinding binding = MainActivityBinding.inflate(getLayoutInflater());
@@ -97,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
                 );
         this.viewModel = new ViewModelProvider(this, fact).get(MainViewModel.class);
         this.viewModel.setAdvancedMode(advMode);
+        this.viewModel.setwGeneInvMode(wGeneMode);
     }
 
     @SuppressLint("RestrictedApi")
@@ -110,7 +114,8 @@ public class MainActivity extends AppCompatActivity {
             m.setOptionalIconsVisible(true);
         }
 
-        menu.findItem(R.id.app_bar_switch).setChecked(this.viewModel.isAdvancedMode());
+        menu.findItem(R.id.advanced_mode_switch).setChecked(this.viewModel.isAdvancedMode());
+        menu.findItem(R.id.wgene_mode_switch).setChecked(this.viewModel.iswGeneInvMode());
         return true;
     }
 
@@ -120,8 +125,11 @@ public class MainActivity extends AppCompatActivity {
             case R.id.about:
                 this.showAboutDialog();
                 return true;
-            case R.id.app_bar_switch:
+            case R.id.advanced_mode_switch:
                 this.toggleAdvancedMode(item);
+                return true;
+            case R.id.wgene_mode_switch:
+                this.toggleWGeneMode(item);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -135,6 +143,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void toggleAdvancedMode(MenuItem advancedModeToggle) {
         advancedModeToggle.setChecked(this.viewModel.toggleAdvancedMode());
+    }
+
+    private void toggleWGeneMode(MenuItem wGeneToggle) {
+        wGeneToggle.setChecked(this.viewModel.toggleWGeneInvMode());
     }
 
     public static class AboutDialog extends DialogFragment {

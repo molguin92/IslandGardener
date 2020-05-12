@@ -67,5 +67,6 @@ Pansy: Pansy by Phạm Thanh Lộc\n
 Rose: Rose by kareemovic\n
 Windflower: anemone by Flatart
     </string>
-    <string name="advanced_mode">Advanced Mode</string>
+    <string name="advanced_mode">Advanced mode</string>
+    <string name="gene_mode">Inverse W gene notation</string>
 </resources>

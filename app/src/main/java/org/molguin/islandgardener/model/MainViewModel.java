@@ -42,6 +42,7 @@ public class MainViewModel extends ViewModel {
     private final Lock lock;
     private final Condition loaded_cond;
     private final MutableLiveData<Boolean> advancedMode;
+    private final MutableLiveData<Boolean> wGeneInvMode;
     private FlowerCollection flowerCollection;
 
     private MainViewModel(final AssetManager am,
@@ -49,6 +50,7 @@ public class MainViewModel extends ViewModel {
                           final Runnable onLoadCallback) {
         super();
         this.advancedMode = new MutableLiveData<Boolean>(false);
+        this.wGeneInvMode = new MutableLiveData<Boolean>(false);
         this.lock = new ReentrantLock();
         this.loaded_cond = this.lock.newCondition();
         this.flowerCollection = null;
@@ -76,14 +78,32 @@ public class MainViewModel extends ViewModel {
         this.advancedMode.setValue(on);
     }
 
+    public boolean iswGeneInvMode() {
+        return this.wGeneInvMode.getValue();
+    }
+
+    public void setwGeneInvMode(boolean on) {
+        this.wGeneInvMode.setValue(on);
+    }
+
     public boolean toggleAdvancedMode() {
         boolean newmode = !this.advancedMode.getValue();
         this.advancedMode.setValue(newmode); // setValue sets value immediately, as opposed to postValue
         return newmode;
     }
 
-    public void observeMode(LifecycleOwner lifecycleOwner, Observer<Boolean> observer) {
+    public boolean toggleWGeneInvMode() {
+        boolean newmode = !this.wGeneInvMode.getValue();
+        this.wGeneInvMode.setValue(newmode); // setValue sets value immediately, as opposed to postValue
+        return newmode;
+    }
+
+    public void observeAdvancedMode(LifecycleOwner lifecycleOwner, Observer<Boolean> observer) {
         this.advancedMode.observe(lifecycleOwner, observer);
+    }
+
+    public void observeWGeneInvMode(LifecycleOwner lifecycleOwner, Observer<Boolean> observer) {
+        this.wGeneInvMode.observe(lifecycleOwner, observer);
     }
 
 

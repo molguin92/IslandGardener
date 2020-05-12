@@ -23,11 +23,18 @@
     tools:context=".MainActivity">
 
     <item
-        android:id="@+id/app_bar_switch"
+        android:id="@+id/advanced_mode_switch"
         android:title="@string/advanced_mode"
         app:showAsAction="never"
         android:checkable="true"
         android:icon="@drawable/ic_flower_gray"/>
+
+    <item
+        android:id="@+id/wgene_mode_switch"
+        android:title="@string/gene_mode"
+        app:showAsAction="never"
+        android:checkable="true" />
+
     <item
         android:id="@+id/about"
         android:icon="@drawable/ic_info_gray"

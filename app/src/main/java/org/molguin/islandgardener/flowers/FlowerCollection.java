@@ -109,12 +109,12 @@ public class FlowerCollection {
         }
     }
 
-    public SortedSet<FuzzyFlower> getAllFuzzyFlowersForSpecies(FlowerConstants.Species s) {
-        return this.speciesCollections.get(s).getAllFuzzyFlowers();
+    public SortedSet<FlowerColorGroup> getAllColorGroupsForSpecies(FlowerConstants.Species s) {
+        return this.speciesCollections.get(s).getAllColorGroups();
     }
 
-    public SortedSet<FuzzyFlower> getAllFlowersForSpecies(FlowerConstants.Species s) {
-        return new TreeSet<FuzzyFlower>(this.speciesCollections.get(s).getAllFlowers());
+    public SortedSet<SpecificFlower> getAllFlowersForSpecies(FlowerConstants.Species s) {
+        return this.speciesCollections.get(s).getAllFlowers();
     }
 
     public SortedSet<FuzzyFlower> getAllOffspring(FuzzyFlower parent1, FuzzyFlower parent2) {
@@ -165,8 +165,8 @@ public class FlowerCollection {
             return new TreeSet<SpecificFlower>(this.idFlowerBiMap.values());
         }
 
-        SortedSet<FuzzyFlower> getAllFuzzyFlowers() {
-            SortedSet<FuzzyFlower> containers = new TreeSet<FuzzyFlower>();
+        SortedSet<FlowerColorGroup> getAllColorGroups() {
+            SortedSet<FlowerColorGroup> containers = new TreeSet<FlowerColorGroup>();
 
             for (FlowerConstants.Color c : this.colorFlowerMap.keySet())
                 containers.add(new FlowerColorGroup(species, c, this.colorFlowerMap.get(c)));

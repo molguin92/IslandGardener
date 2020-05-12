@@ -41,7 +41,7 @@ public interface FuzzyFlower extends Comparable<FuzzyFlower> {
 
     double getTotalProbability();
 
-    String humanReadableVariants();
+    String humanReadableVariants(boolean invWGene);
 
     boolean isGroup();
     

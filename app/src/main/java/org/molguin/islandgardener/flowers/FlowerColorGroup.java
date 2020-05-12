@@ -63,13 +63,13 @@ public class FlowerColorGroup extends AbstractFuzzyFlower {
     }
 
     @Override
-    public String humanReadableVariants() {
+    public String humanReadableVariants(boolean invWGene) {
         Iterator<SpecificFlower> iter = this.variants.keySet().iterator();
         if (!iter.hasNext()) return "";
 
         StringBuilder sb = new StringBuilder();
         while (true) {
-            sb.append(iter.next().human_readable_genotype);
+            sb.append(iter.next().genotypeIDToSymbolic(invWGene));
             if (iter.hasNext()) {
                 sb.append(", ");
             } else break;

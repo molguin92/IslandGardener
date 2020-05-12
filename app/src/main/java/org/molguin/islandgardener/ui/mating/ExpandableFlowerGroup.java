@@ -45,7 +45,7 @@ import java.util.Map;
 public class ExpandableFlowerGroup extends ExpandableGroup {
     private final FuzzyFlower flower;
 
-    public ExpandableFlowerGroup(FuzzyFlower flower) {
+    public ExpandableFlowerGroup(FuzzyFlower flower, boolean invWGene) {
         super(new HeaderItem(flower), false);
         this.flower = flower;
         List<Map.Entry<SpecificFlower, Double>> entries = new ArrayList<Map.Entry<SpecificFlower, Double>>(this.flower.getVariantProbs().entrySet());
@@ -57,7 +57,7 @@ public class ExpandableFlowerGroup extends ExpandableGroup {
         });
 
         for (Map.Entry<SpecificFlower, Double> e : entries)
-            this.add(new VariantItem(e));
+            this.add(new VariantItem(e, invWGene));
     }
 
     private static class HeaderItem extends BindableItem<OffspringProbCardBinding> implements ExpandableItem {
@@ -124,10 +124,12 @@ public class ExpandableFlowerGroup extends ExpandableGroup {
         // for subitems
         private final SpecificFlower flower;
         private final double probability;
+        private final boolean invWGene;
 
-        VariantItem(Map.Entry<SpecificFlower, Double> entry) {
+        VariantItem(Map.Entry<SpecificFlower, Double> entry, boolean invWGene) {
             this.flower = entry.getKey();
             this.probability = entry.getValue();
+            this.invWGene = invWGene;
         }
 
         @NonNull
@@ -150,7 +152,7 @@ public class ExpandableFlowerGroup extends ExpandableGroup {
                     .getVariantProbs()
                     .keySet()
                     .toArray(new SpecificFlower[1])[0];
-            binding.variantsHeading.setText(f.human_readable_genotype);
+            binding.variantsHeading.setText(f.genotypeIDToSymbolic(this.invWGene));
 
         }
 
