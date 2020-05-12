@@ -1,6 +1,8 @@
 # Island Gardener
 > Simplifying flower crossbreeding in AC:NH
 
+<a href="https://play.google.com/store/apps/details?id=org.molguin.islandgardener"><img src="https://raw.githubusercontent.com/steverichey/google-play-badge-svg/master/img/en_get.svg" width="200px"></a>
+
 Island Gardener simplifies flower breeding in Animal Crossing: New Horizons by providing you with all the information you need about crossbreeding.
 It allows you to optimally choose which flowers to plant together in other to maximize the odds of getting that sweet rare hybrid you're missing.
 
@@ -8,7 +10,7 @@ It allows you to optimally choose which flowers to plant together in other to ma
 ## Installation
 
 ### Play Store (Recommended)
-TODO
+[Click here](https://play.google.com/store/apps/details?id=org.molguin.islandgardener) or search for "Island Gardener" on the Google Play Store, and enjoy.
 
 ### Manual
 
@@ -21,7 +23,7 @@ TODO
 
 ## Meta
 
-Manuel Olguín Muñoz – [@molguin92](https://twitter.com/molguin92) – manuel@olguin.se
+Reach me on Twitter: [@molguin92](https://twitter.com/molguin92).
 
 Distributed under the GPLv3.0 license. See [LICENSE](LICENSE) for more information.
 
