@@ -35,6 +35,7 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         versionNameSuffix = 'beta'
+        vectorDrawables.useSupportLibrary = true
     }
 
     buildTypes {

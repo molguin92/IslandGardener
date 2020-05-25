@@ -38,7 +38,7 @@
         android:cropToPadding="false"
         android:gravity="center_vertical"
         android:maxHeight="45dp"
-        app:srcCompat="@drawable/cosmo_black" />
+        app:srcCompat="@drawable/hyacinth_red" />
 
     <!--    <TextView-->
     <!--        android:layout_width="wrap_content"-->
